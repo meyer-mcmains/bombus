@@ -1,0 +1,8 @@
+import { Grid } from "global.slint";
+
+export component Cover inherits Rectangle {
+    in property <color> bg-color;
+    background: bg-color;
+    height: Grid.inner-size;
+    width: Grid.inner-size;
+}
