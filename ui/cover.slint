@@ -1,8 +1,36 @@
-import { Grid } from "global.slint";
+import { Grid, Logic } from "global.slint";
 
 export component Cover inherits Rectangle {
     in property <color> bg-color;
+    in property <int> index;
+    property <bool> selected;
     background: bg-color;
     height: Grid.inner-size;
     width: Grid.inner-size;
+
+    states [
+        enabled when !touch.pressed && touch.has-hover: {
+            height: Grid.inner-size + 4px;
+            width: Grid.inner-size + 4px;
+        }
+
+        enabled when touch.pressed : {
+            root.height: Grid.inner-size - 16px;
+            root.width: Grid.inner-size - 16px;
+        }
+    ]
+
+    animate width, height{
+        duration: 200ms;
+        easing: ease-in-out-circ;
+    }
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        // TOOD add double click (when release to play full album)
+        clicked => {
+            selected = !selected;
+            Logic.album-clicked(index);
+        }
+    }
 }

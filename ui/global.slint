@@ -4,3 +4,11 @@ export global Grid {
     in-out property <length> outer-height: inner-size + spacing * 2;
     in-out property <length> outer-width: inner-size + spacing * 2;
 }
+
+export global Logic {
+    pure callback album-clicked(int);
+}
+
+export global Const {
+    out property <int> i32-max: 2147483647;
+}

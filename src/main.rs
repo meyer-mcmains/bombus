@@ -1,13 +1,11 @@
-use std::rc::Rc;
-
 use slint::{ModelRc, VecModel};
+use std::rc::Rc;
 
 slint::include_modules!();
 
 fn main() -> Result<(), slint::PlatformError> {
     let ui = AppWindow::new()?;
-
-    // let ui_handle = ui.as_weak();
+    let ui_handle = ui.as_weak();
 
     let albums_model: Rc<VecModel<slint::Color>> = Rc::new(VecModel::from(vec![
         slint::Color::from_rgb_u8(81, 255, 234),
@@ -34,6 +32,23 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let albums = ModelRc::from(albums_model.clone());
     ui.set_albums(albums);
+
+    let mut selected_index = i32::MAX;
+
+    ui.global::<Logic>().on_album_clicked(move |index| {
+        let next_selected_index = if index == selected_index {
+            i32::MAX
+        } else {
+            index
+        };
+
+        selected_index = next_selected_index;
+
+        ui_handle
+            .upgrade()
+            .unwrap()
+            .set_selected_index(next_selected_index);
+    });
 
     ui.run()
 }
