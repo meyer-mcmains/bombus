@@ -1,6 +1,7 @@
 import { ScrollView } from "std-widgets.slint";
 import { Grid, Logic, Const } from "global.slint";
 import { Cover } from "cover.slint";
+import { Album } from "album.slint";
 
 export { Logic }
 
@@ -21,12 +22,12 @@ export component AppWindow inherits Window {
         width: parent.width;
         viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : Grid.outer-height);
 
-        HorizontalLayout {
+        Album {
             y: Math.floor(selected-index / items-per-row) * Grid.outer-height + Grid.outer-height;
             height: selected-index == Const.i32-max ? 0 : Grid.outer-height;
-            Rectangle {
-                background: black;
-            }
+            selected-index: selected-index;
+            items-per-row: items-per-row;
+            offset-x: offset-x;
         }
 
         // loop over albums creating the grid

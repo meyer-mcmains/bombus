@@ -1,0 +1,49 @@
+import { Grid } from "./global.slint";
+
+export component Album inherits VerticalLayout {
+    in property <int> selected-index;
+    in property <int> items-per-row;
+    in property <length> offset-x;
+    HorizontalLayout {
+        // background: red;
+        x: mod(selected-index, items-per-row) * Grid.outer-width + offset-x;
+        height: 24px;
+        width: Grid.outer-width;
+        alignment: center;
+
+        // Make a triangle
+        Path {
+            width: 100%;
+            height: 24px;
+            MoveTo {
+                x: 0;
+                y: 24;
+            }
+
+            LineTo {
+                x: 16;
+                y: 0;
+            }
+
+            LineTo {
+                x: 32;
+                y: 24;
+            }
+
+            Close { }
+
+            fill: red;
+        }
+
+        animate x {
+            duration: 250ms;
+            easing: ease-in-out;
+       }
+    }
+
+    Rectangle {
+        padding-top: 24px;
+        background: red;
+    }
+}
+
