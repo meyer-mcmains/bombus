@@ -1,13 +1,14 @@
 import { ScrollView } from "std-widgets.slint";
-import { Grid, Logic, Const, Album } from "global.slint";
+import { Grid, Logic, Const, Album, Theme } from "global.slint";
 import { Cover } from "cover.slint";
 import { AlbumLayout } from "albumlayout.slint";
 
-export { Logic }
+export { Logic, Theme }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;
     in property <int> selected-index;
+    background: Theme.system-grey-6;
     min-width: Grid.outer-width;
     min-height: Grid.outer-height;
     ScrollView {
@@ -19,12 +20,14 @@ export component AppWindow inherits Window {
         height: parent.height;
         width: parent.width;
         viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : Grid.outer-height);
+
         AlbumLayout {
             y: Math.floor(selected-index / items-per-row) * Grid.outer-height + Grid.outer-height;
             height: selected-index == Const.i32-max ? 0 : Grid.outer-height;
             selected-index: selected-index;
             items-per-row: items-per-row;
             offset-x: offset-x;
+            album: albums[selected-index];
         }
 
         // loop over albums creating the grid

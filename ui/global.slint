@@ -5,6 +5,11 @@ export global Grid {
     in-out property <length> outer-width: inner-size + spacing * 2;
 }
 
+export global Theme {
+    out property <color> system-grey-5: rgb(44, 44, 46);
+    out property <color> system-grey-6: rgb(28, 28, 30);
+}
+
 export global Logic {
     pure callback album-clicked(int);
 }
@@ -23,5 +28,4 @@ export struct Album {
     artist: string,
     title: string,
     tracks: [Track],
-    image: image
-}
+    image: image}
