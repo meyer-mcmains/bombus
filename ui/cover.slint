@@ -1,10 +1,10 @@
-import { Grid, Logic } from "global.slint";
+import { Grid, Logic, Album } from "global.slint";
 
-export component Cover inherits Rectangle {
-    in property <color> bg-color;
+export component Cover inherits Image {
+    in property <Album> album;
     in property <int> index;
     property <bool> selected;
-    background: bg-color;
+    source: album.image;
     height: Grid.inner-size;
     width: Grid.inner-size;
 
