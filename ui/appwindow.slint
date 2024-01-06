@@ -11,6 +11,7 @@ export component AppWindow inherits Window {
     background: Theme.system-grey-6;
     min-width: Grid.outer-width;
     min-height: Grid.outer-height;
+
     ScrollView {
         property <int> items_per_row: Math.floor(parent.width / Grid.outer-width);
         property <int> rows: Math.ceil(albums.length / items-per-row);
@@ -19,11 +20,12 @@ export component AppWindow inherits Window {
         property <length> selected-y: Math.floor(selected-index / items-per-row) * Grid.outer-height;
         height: parent.height;
         width: parent.width;
-        viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : Grid.outer-height);
+        viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : album-layout.min-height + 24px);
 
-        AlbumLayout {
+        album-layout:=AlbumLayout {
             y: Math.floor(selected-index / items-per-row) * Grid.outer-height + Grid.outer-height;
-            height: selected-index == Const.i32-max ? 0 : Grid.outer-height;
+            x: offset-x + Grid.spacing;
+            width: parent.width - offset-x * 2 - Grid.spacing * 2;
             selected-index: selected-index;
             items-per-row: items-per-row;
             offset-x: offset-x;
@@ -34,7 +36,7 @@ export component AppWindow inherits Window {
         for album [index] in albums: Rectangle {
             property <length> pos-y: Math.floor(index / items-per-row) * Grid.outer-height;
             x: mod(index, items-per-row) * Grid.outer-width + offset-x;
-            y: pos-y > selected-y ? pos-y + Grid.outer-height : pos-y;
+            y: pos-y > selected-y ? pos-y + album-layout.min-height + 24px : pos-y;
             height: Grid.outer-height;
             width: Grid.outer-width;
             cover := Cover {

@@ -1,14 +1,19 @@
-import { Grid, Album, Theme } from "./global.slint";
+import { Grid, Album, Theme } from "global.slint";
+import { LargeTitle, Headline} from "typography.slint";
+import { TrackLayout } from "tracklayout.slint";
 
 export component AlbumLayout inherits VerticalLayout {
     in property <int> selected-index;
     in property <int> items-per-row;
     in property <length> offset-x;
     in property <Album> album;
+    property <int> tracks-first-column-length: Math.ceil(album.tracks.length / 2);
+    alignment: start;
+
     HorizontalLayout {
-        x: mod(selected-index, items-per-row) * Grid.outer-width + offset-x;
+        x: mod(selected-index, items-per-row) * Grid.outer-width;
         height: 24px;
-        width: Grid.outer-width;
+        width: Grid.inner-size;
         // Make a triangle
         Path {
             width: 100%;
@@ -40,14 +45,48 @@ export component AlbumLayout inherits VerticalLayout {
 
     HorizontalLayout {
         Rectangle {
-            width: offset-x * 2;
-        }
-        Rectangle {
             background: Theme.system-grey-5;
-        }
-        Rectangle {
-            width: offset-x * 2;
+            VerticalLayout {
+                alignment: start;
+                padding: 24px;
+                VerticalLayout {
+                    padding-bottom: 16px;
+                    Rectangle {
+                        Headline {
+                            width: parent.width;
+                            text: album.artist;
+                        }
+                    }
+
+                    Rectangle {
+                        LargeTitle {
+                            width: parent.width;
+                            text: album.title;
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 16px;
+                    VerticalLayout {
+                        for track [index] in album.tracks: Rectangle {
+                            height: index < tracks-first-column-length ? 24px : 0px;
+                            if index < tracks-first-column-length: TrackLayout {
+                                track: track;
+                            }
+                        }
+                    }
+
+                    VerticalLayout {
+                        for track [index] in album.tracks: Rectangle {
+                            height: index >= tracks-first-column-length ? 24px : 0px;
+                            if index >= tracks-first-column-length: TrackLayout {
+                                track: track;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-
 }

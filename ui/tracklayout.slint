@@ -1,0 +1,25 @@
+import { Track, Theme } from "global.slint";
+import { Body } from "typography.slint";
+
+export component TrackLayout inherits Rectangle {
+    in property <Track> track;
+    property <length> left-right-padding: 8px;
+    background: mod(track.number, 2) == 0 ? Theme.system-grey-4 : Theme.system-grey-5;
+    HorizontalLayout {
+        padding-left: left-right-padding;
+        padding-right: left-right-padding;
+        alignment: space-between;
+
+        Body {
+            vertical-alignment: center;
+            horizontal-alignment: left;
+            text: "\{track.number}  \{track.name}";
+        }
+
+        Body {
+            vertical-alignment: center;
+            horizontal-alignment: left;
+            text: track.duration;
+        }
+    }
+}
