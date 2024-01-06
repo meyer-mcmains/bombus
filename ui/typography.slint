@@ -13,7 +13,17 @@ export component Headline inherits Text {
 }
 
 export component Body inherits Text {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     horizontal-alignment: left;
+}
+
+export component BodySmall inherits Body {
+    font-size: 13px;
+    font-weight: 400;
+    horizontal-alignment: left;
+}
+
+export component BodySmallMono inherits BodySmall {
+    font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
 }

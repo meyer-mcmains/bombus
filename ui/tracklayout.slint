@@ -1,25 +1,53 @@
 import { Track, Theme } from "global.slint";
-import { Body } from "typography.slint";
+import { Body, BodySmallMono } from "typography.slint";
 
 export component TrackLayout inherits Rectangle {
     in property <Track> track;
     property <length> left-right-padding: 8px;
-    background: mod(track.number, 2) == 0 ? Theme.system-grey-4 : Theme.system-grey-5;
+    background: Theme.system-grey-4;
+    border-color: Theme.system-grey-5;
+    border-width: 2px;
+
     HorizontalLayout {
         padding-left: left-right-padding;
         padding-right: left-right-padding;
         alignment: space-between;
 
-        Body {
-            vertical-alignment: center;
-            horizontal-alignment: left;
-            text: "\{track.number}  \{track.name}";
+        HorizontalLayout {
+            HorizontalLayout {
+                spacing: 6px;
+                padding-right: 10px;
+
+                BodySmallMono {
+                    opacity: 0.75;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                    text: track.number;
+                    width: 18px;
+                    font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
+                }
+
+                Rectangle {
+                    y: 6px;
+                    height: parent.height - 12px;
+                    width: 2px;
+                    background: Theme.system-grey-5;
+                }
+            }
+
+            Body {
+                vertical-alignment: center;
+                horizontal-alignment: left;
+                text: track.name;
+            }
         }
 
-        Body {
+        BodySmallMono {
+            opacity: 0.75;
             vertical-alignment: center;
             horizontal-alignment: left;
             text: track.duration;
+            font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
         }
     }
 }
