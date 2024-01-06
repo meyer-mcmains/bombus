@@ -121,11 +121,6 @@ fn main() -> Result<(), slint::PlatformError> {
                     name: SharedString::from("Burn"),
                     duration: SharedString::from("03:23"),
                 },
-                Track {
-                    number: 10,
-                    name: SharedString::from("The Void"),
-                    duration: SharedString::from("04:48"),
-                },
             ])),
         },
         Album {
@@ -155,36 +150,6 @@ fn main() -> Result<(), slint::PlatformError> {
                     number: 4,
                     name: SharedString::from("Monthly Friend"),
                     duration: SharedString::from("03:31"),
-                },
-                Track {
-                    number: 5,
-                    name: SharedString::from("Heal"),
-                    duration: SharedString::from("03:54"),
-                },
-                Track {
-                    number: 6,
-                    name: SharedString::from("Almost Bliss"),
-                    duration: SharedString::from("03:08"),
-                },
-                Track {
-                    number: 7,
-                    name: SharedString::from("Glue"),
-                    duration: SharedString::from("03:04"),
-                },
-                Track {
-                    number: 8,
-                    name: SharedString::from("Arrows"),
-                    duration: SharedString::from("03:24"),
-                },
-                Track {
-                    number: 9,
-                    name: SharedString::from("Burn"),
-                    duration: SharedString::from("03:23"),
-                },
-                Track {
-                    number: 10,
-                    name: SharedString::from("The Void"),
-                    duration: SharedString::from("04:48"),
                 },
             ])),
         },
