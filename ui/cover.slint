@@ -30,7 +30,7 @@ export component Cover inherits Image {
         // TOOD add double click (when release to play full album)
         clicked => {
             selected = !selected;
-            Logic.album-clicked(index);
+            Logic.album-clicked(index, album);
         }
     }
 }

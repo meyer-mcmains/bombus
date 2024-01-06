@@ -1,5 +1,6 @@
 use slint::{Image, ModelRc, SharedString, VecModel};
-use std::{path::Path, rc::Rc};
+use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
+use std::{path::Path, rc::Rc, time::Duration};
 
 slint::include_modules!();
 
@@ -624,25 +625,62 @@ fn main() -> Result<(), slint::PlatformError> {
         },
     ]));
 
+    let config = PlatformConfig {
+        dbus_name: "bombus",
+        display_name: "Bombus",
+        hwnd: None,
+    };
+
+    let mut controls = MediaControls::new(config).unwrap();
+
+    // TODO respond to media control events
+    controls
+        .attach(|event: MediaControlEvent| println!("Event received: {:?}", event))
+        .unwrap();
+
     let albums = ModelRc::from(albums_model.clone());
     ui.set_albums(albums);
 
     let mut selected_index = i32::MAX;
 
-    ui.global::<Logic>().on_album_clicked(move |index| {
-        let next_selected_index = if index == selected_index {
-            i32::MAX
-        } else {
-            index
-        };
+    ui.global::<Logic>()
+        .on_album_clicked(move |index, album: Album| {
+            let next_selected_index = if index == selected_index {
+                i32::MAX
+            } else {
+                index
+            };
 
-        selected_index = next_selected_index;
+            selected_index = next_selected_index;
 
-        ui_handle
-            .upgrade()
-            .unwrap()
-            .set_selected_index(next_selected_index);
-    });
+            ui_handle
+                .upgrade()
+                .unwrap()
+                .set_selected_index(next_selected_index);
+
+            // TODO move this placeholder logic to socket notifications
+            let mut scheme = "file://".to_owned();
+            let binding = album.image.path().unwrap().canonicalize().unwrap();
+            let cover = binding.to_str().unwrap();
+            scheme.push_str(cover);
+
+            // Update the media metadata.
+            controls
+                .set_metadata(MediaMetadata {
+                    title: Some(&album.tracks.row_data_tracked(0).unwrap().name),
+                    artist: Some(&album.artist),
+                    album: Some(&album.title),
+                    duration: Some(Duration::from_secs(120)),
+                    cover_url: Some(scheme.as_str()),
+                })
+                .unwrap();
+
+            controls
+                .set_playback(souvlaki::MediaPlayback::Playing {
+                    progress: Some(souvlaki::MediaPosition(Duration::from_secs(0))),
+                })
+                .unwrap();
+        });
 
     ui.global::<Logic>().on_track_clicked(move |track: Track| {
         println!("{}", track.name);
