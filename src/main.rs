@@ -644,5 +644,9 @@ fn main() -> Result<(), slint::PlatformError> {
             .set_selected_index(next_selected_index);
     });
 
+    ui.global::<Logic>().on_track_clicked(move |track: Track| {
+        println!("{}", track.name);
+    });
+
     ui.run()
 }

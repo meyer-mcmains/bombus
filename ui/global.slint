@@ -1,3 +1,16 @@
+export struct Track {
+    duration: string,
+    name: string,
+    number: int,
+}
+
+export struct Album {
+    artist: string,
+    title: string,
+    tracks: [Track],
+    image: image
+}
+
 export global Grid {
     in-out property <length> inner-size: 264px;
     in-out property <length> spacing: 16px;
@@ -10,24 +23,14 @@ export global Theme {
     out property <color> system-grey-4: rgb(58, 58, 60);
     out property <color> system-grey-5: rgb(44, 44, 46);
     out property <color> system-grey-6: rgb(28, 28, 30);
+    out property <color> focus: rgb(22, 135, 243);
 }
 
 export global Logic {
     pure callback album-clicked(int);
+    pure callback track-clicked(Track);
 }
 
 export global Const {
     out property <int> i32-max: 2147483647;
 }
-
-export struct Track {
-    duration: string,
-    name: string,
-    number: int,
-}
-
-export struct Album {
-    artist: string,
-    title: string,
-    tracks: [Track],
-    image: image}

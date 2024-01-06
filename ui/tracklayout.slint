@@ -1,10 +1,10 @@
-import { Track, Theme } from "global.slint";
+import { Track, Theme, Logic } from "global.slint";
 import { Body, BodySmallMono } from "typography.slint";
 
 export component TrackLayout inherits Rectangle {
     in property <Track> track;
     property <length> left-right-padding: 8px;
-    background: Theme.system-grey-4;
+    background:  touch.has-hover ? Theme.focus : Theme.system-grey-4;
     border-color: Theme.system-grey-5;
     border-width: 2px;
 
@@ -48,6 +48,13 @@ export component TrackLayout inherits Rectangle {
             horizontal-alignment: left;
             text: track.duration;
             font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            Logic.track-clicked(track);
         }
     }
 }
