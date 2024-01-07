@@ -1,0 +1,15 @@
+[package]
+name = "bombus-data"
+version = "0.1.0"
+authors = ["meyer"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ureq = { version = "2.0.2", features = ["json"] }
+serde = { version = "1.0.123", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.13.0"
+tungstenite = "0.13.0"
+native-tls = "0.2.7"
