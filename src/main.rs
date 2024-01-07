@@ -1,4 +1,4 @@
-use bombus_data::{get_cover, get_library};
+use bombus_data::{get_cover, get_library, play_album};
 use slint::{Image, Model, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
 use std::{
@@ -180,6 +180,8 @@ fn main() -> Result<(), slint::PlatformError> {
                     progress: Some(souvlaki::MediaPosition(Duration::from_secs(0))),
                 })
                 .unwrap();
+
+            play_album(&album.artist, &album.title);
         });
 
     window
