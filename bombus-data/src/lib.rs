@@ -105,7 +105,7 @@ pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
     Ok((true, file))
 }
 
-pub fn play_album(artist: &String, album: &String) {
+pub fn play_album(artist: &str, album: &str) {
     let path = [BASE_URL, "/play-album"].join("");
 
     post(&path)
