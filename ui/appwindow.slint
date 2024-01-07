@@ -22,7 +22,8 @@ export component AppWindow inherits Window {
         width: parent.width;
         viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : album-layout.min-height + 24px);
 
-        album-layout:=AlbumLayout {
+        album-layout := AlbumLayout {
+            visible: albums.length > 0;
             y: Math.floor(selected-index / items-per-row) * Grid.outer-height + Grid.outer-height;
             x: offset-x + Grid.spacing;
             width: parent.width - offset-x * 2 - Grid.spacing * 2;
