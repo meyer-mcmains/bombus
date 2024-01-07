@@ -21,7 +21,7 @@ const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
  * load the album cover based the artist and album title
  * setting the fallback if the cover does not exist
  */
-fn load_cover_from_path(artist: &str, album: &str) -> Image {
+fn load_cover(artist: &str, album: &str) -> Image {
     let safe_artist = artist.replace('/', "_");
     let safe_album = album.replace('/', "_");
     let fallback_cover = Image::load_from_path(Path::new("./src/assets/cover.jpg")).unwrap();
@@ -35,11 +35,21 @@ fn load_cover_from_path(artist: &str, album: &str) -> Image {
     .unwrap_or(fallback_cover)
 }
 
+/**
+ * load the album cover from an already verified path
+ */
+fn load_cover_from_path(path: &Path) -> Image {
+    Image::load_from_path(path).unwrap()
+}
+
 fn main() -> Result<(), slint::PlatformError> {
     let window = AppWindow::new()?;
 
     // load the library
-    let library = || get_library().unwrap();
+    let library = get_library().unwrap();
+    // make a clone so we can operate on the library in 2 separate threads
+    // TODO improve this
+    let library_copy = library.clone();
 
     let window_handle_weak = window.as_weak();
     thread::spawn(move || {
@@ -49,7 +59,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
                 // transform the library into structs that can be consumed by the ui
                 // TODO serialize into the UI structs directly
-                library().into_iter().for_each(|artist| {
+                library.into_iter().for_each(|artist| {
                     artist.albums.into_iter().for_each(|album| {
                         let tracks: Vec<Track> = album
                             .tracks
@@ -61,7 +71,7 @@ fn main() -> Result<(), slint::PlatformError> {
                             })
                             .collect();
 
-                        let image = load_cover_from_path(&album.artist, &album.title);
+                        let image = load_cover(&album.artist, &album.title);
 
                         let album: Album = Album {
                             id: album.album_id.into(),
@@ -82,38 +92,39 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let window_handle_weak_mutex = Arc::new(Mutex::new(window.as_weak()));
     thread::spawn(move || {
-        for artist in library().into_iter() {
+        for artist in library_copy.into_iter() {
             for album in artist.albums {
                 let window_handle_clone = Arc::clone(&window_handle_weak_mutex);
 
                 thread::spawn(move || {
                     let window_handle = window_handle_clone.lock().unwrap();
 
+                    let (exists, path) = get_cover(&album.artist, &album.title).unwrap();
+
                     // TODO skip event loop is cover already exists
-                    get_cover(&album.artist, &album.title).unwrap();
+                    if !exists {
+                        window_handle
+                            .upgrade_in_event_loop(move |handle| {
+                                // https://github.com/slint-ui/slint/discussions/2329#discussioncomment-5213994
+                                let binding = handle.get_albums();
+                                let ui_albums = binding
+                                    .as_any()
+                                    .downcast_ref::<slint::VecModel<Album>>()
+                                    .unwrap();
 
-                    window_handle
-                        .upgrade_in_event_loop(move |handle| {
-                            // https://github.com/slint-ui/slint/discussions/2329#discussioncomment-5213994
-                            let binding = handle.get_albums();
-                            let ui_albums = binding
-                                .as_any()
-                                .downcast_ref::<slint::VecModel<Album>>()
-                                .unwrap();
+                                let ui_album_index = ui_albums
+                                    .iter()
+                                    .position(|ui_album| ui_album.id == album.album_id);
 
-                            let ui_album_index = ui_albums.iter().position(|ui_album| {
-                                // TODO use ids instead
-                                ui_album.artist == album.artist && ui_album.title == album.title
-                            });
-
-                            if let Some(row) = ui_album_index {
-                                ui_albums.row_data_tracked(row);
-                                let mut data = ui_albums.row_data(row).unwrap();
-                                data.image = load_cover_from_path(&data.artist, &data.title);
-                                ui_albums.set_row_data(row, data);
-                            }
-                        })
-                        .unwrap();
+                                if let Some(row) = ui_album_index {
+                                    ui_albums.row_data_tracked(row);
+                                    let mut data = ui_albums.row_data(row).unwrap();
+                                    data.image = load_cover_from_path(&path);
+                                    ui_albums.set_row_data(row, data);
+                                }
+                            })
+                            .unwrap();
+                    }
 
                     // drop mutex lock
                     drop(window_handle);
