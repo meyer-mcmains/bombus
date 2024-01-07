@@ -70,7 +70,7 @@ pub struct Cover {
     pub color: String,
 }
 
-pub fn get_cover(artist: &str, album: &str) -> Result<PathBuf, Error> {
+pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
     let safe_album = album.replace("/", "_");
     let safe_artist = artist.replace("/", "_");
     let os_artist = OsStr::new(&safe_artist);
@@ -98,9 +98,11 @@ pub fn get_cover(artist: &str, album: &str) -> Result<PathBuf, Error> {
 
         let mut buffer = File::create(file.clone())?;
         buffer.write_all(&bytes)?;
+
+        return Ok((false, file));
     }
 
-    Ok(file)
+    Ok((true, file))
 }
 
 pub fn play_album(artist: &String, album: &String) {
