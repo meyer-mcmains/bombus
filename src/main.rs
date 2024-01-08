@@ -1,4 +1,7 @@
-use bombus_data::{get_cover, get_library, play_album};
+use bombus_data::{
+    create_socket, get_cover, get_library, next_track, notification_to_json, play_album,
+    play_pause, previous_track, Notification, NotificationTypes, PlayState,
+};
 use slint::{Image, Model, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
 use std::{
@@ -40,6 +43,34 @@ fn load_cover(artist: &str, album: &str) -> Image {
  */
 fn load_cover_from_path(path: &Path) -> Image {
     Image::load_from_path(path).unwrap()
+}
+
+fn handle_play_state_change(controls: &mut MediaControls, notification: Notification) {
+    match notification.play_state {
+        PlayState::Paused => {
+            controls
+                .set_playback(souvlaki::MediaPlayback::Paused {
+                    progress: Some(souvlaki::MediaPosition(Duration::from_millis(
+                        notification.position,
+                    ))),
+                })
+                .unwrap();
+        }
+        PlayState::Playing => {
+            controls
+                .set_playback(souvlaki::MediaPlayback::Playing {
+                    progress: Some(souvlaki::MediaPosition(Duration::from_millis(
+                        notification.position,
+                    ))),
+                })
+                .unwrap();
+        }
+        PlayState::Stopped => {
+            controls
+                .set_playback(souvlaki::MediaPlayback::Stopped)
+                .unwrap();
+        }
+    }
 }
 
 fn main() -> Result<(), slint::PlatformError> {
@@ -133,13 +164,6 @@ fn main() -> Result<(), slint::PlatformError> {
         }
     });
 
-    let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();
-
-    // TODO respond to media control events
-    controls
-        .attach(|event: MediaControlEvent| println!("Event received: {:?}", event))
-        .unwrap();
-
     let mut selected_index = i32::MAX;
 
     let window_handle_weak = window.as_weak();
@@ -158,29 +182,6 @@ fn main() -> Result<(), slint::PlatformError> {
                 .upgrade_in_event_loop(move |window| window.set_selected_index(selected_index))
                 .unwrap();
 
-            // TODO move this placeholder logic to socket notifications
-            let mut scheme = "file://".to_owned();
-            let binding = album.image.path().unwrap().canonicalize().unwrap();
-            let cover = binding.to_str().unwrap();
-            scheme.push_str(cover);
-
-            // Update the media metadata.
-            controls
-                .set_metadata(MediaMetadata {
-                    title: Some(&album.tracks.row_data_tracked(0).unwrap().name),
-                    artist: Some(&album.artist),
-                    album: Some(&album.title),
-                    duration: Some(Duration::from_secs(120)),
-                    cover_url: Some(scheme.as_str()),
-                })
-                .unwrap();
-
-            controls
-                .set_playback(souvlaki::MediaPlayback::Playing {
-                    progress: Some(souvlaki::MediaPosition(Duration::from_secs(0))),
-                })
-                .unwrap();
-
             play_album(&album.artist, &album.title);
         });
 
@@ -189,6 +190,73 @@ fn main() -> Result<(), slint::PlatformError> {
         .on_track_clicked(move |track: Track| {
             println!("{}", track.name);
         });
+
+    let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();
+
+    controls
+        .attach(|event: MediaControlEvent| {
+            match event {
+                MediaControlEvent::Pause | MediaControlEvent::Play | MediaControlEvent::Toggle => {
+                    play_pause();
+                }
+                MediaControlEvent::Next => next_track(),
+                MediaControlEvent::Previous => previous_track(),
+                // if these notifications are ever relevant do something with them
+                MediaControlEvent::Stop
+                | MediaControlEvent::Seek(_)
+                | MediaControlEvent::SeekBy(_, _)
+                | MediaControlEvent::SetPosition(_)
+                | MediaControlEvent::SetVolume(_)
+                | MediaControlEvent::Raise
+                | MediaControlEvent::Quit
+                | MediaControlEvent::OpenUri(_) => {}
+            }
+        })
+        .unwrap();
+
+    thread::spawn(move || {
+        let mut socket = create_socket();
+
+        loop {
+            // read socket message
+            let msg = socket.read_message().expect("Error reading message");
+            let notification = notification_to_json(msg.into_text().unwrap());
+
+            // fire event
+            match notification.notification_type {
+                NotificationTypes::PlayStateChanged => {
+                    handle_play_state_change(&mut controls, notification);
+                }
+                NotificationTypes::Startup
+                | NotificationTypes::TrackChanged
+                | NotificationTypes::PlayingTracksChanged
+                | NotificationTypes::NowPlayingListChanged => {
+                    let (_exists, path) =
+                        get_cover(&notification.artist, &notification.album).unwrap();
+
+                    let mut cover_path: String = "file://".to_owned();
+                    let canonical_path = path.canonicalize().unwrap();
+                    cover_path.push_str(canonical_path.to_str().unwrap());
+
+                    controls
+                        .set_metadata(MediaMetadata {
+                            title: Some(&notification.track),
+                            artist: Some(&notification.artist),
+                            album: Some(&notification.album),
+                            duration: Some(Duration::from_millis(notification.duration)),
+                            cover_url: Some(&cover_path),
+                        })
+                        .unwrap();
+
+                    handle_play_state_change(&mut controls, notification);
+                }
+                // if these notifications are ever relevant do something with them
+                NotificationTypes::PlayCountersChanged
+                | NotificationTypes::NowPlayingListEnded
+                | NotificationTypes::VolumeLevelChanged => {}
+            }
+        }
+    });
 
     window.run()
 }

@@ -7,7 +7,7 @@ use std::{
 };
 
 use native_tls::TlsStream;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 
 use tungstenite::{connect, stream::Stream, WebSocket};
 use ureq::{get, post, Error};
@@ -176,6 +176,13 @@ pub enum NotificationTypes {
     PlayingTracksChanged,
 }
 
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub enum PlayState {
+    Playing,
+    Paused,
+    Stopped,
+}
+
 fn default_notification_position() -> u64 {
     0
 }
@@ -183,41 +190,17 @@ fn default_notification_position() -> u64 {
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Notification {
-    #[serde(default, deserialize_with = "bool_from_string")]
-    pub play_state: bool,
-    #[serde(
-        default = "default_notification_position",
-        deserialize_with = "seconds_from_milliseconds"
-    )]
+    pub play_state: PlayState,
+    #[serde(default = "default_notification_position")]
     pub position: u64,
     #[serde(rename = "notification")]
     pub notification_type: NotificationTypes,
-    #[serde(
-        default = "default_notification_position",
-        deserialize_with = "seconds_from_milliseconds"
-    )]
+    #[serde(default = "default_notification_position")]
     pub duration: u64,
+    pub artist: String,
+    pub album: String,
+    pub track: String,
     pub sound_graph: Vec<f64>,
-}
-
-// Deserialize bool from String with custom value mapping
-fn bool_from_string<'de, D>(deserializer: D) -> Result<bool, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    match String::deserialize(deserializer)?.as_ref() {
-        "Playing" => Ok(true),
-        "Paused" => Ok(false),
-        "Stopped" => Ok(false),
-        _ => Ok(false),
-    }
-}
-
-fn seconds_from_milliseconds<'de, D>(deserializer: D) -> Result<u64, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(u64::deserialize(deserializer)? / 1000)
 }
 
 pub fn notification_to_json(notification: String) -> Notification {
