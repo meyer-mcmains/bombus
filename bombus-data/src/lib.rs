@@ -128,6 +128,12 @@ pub fn next_track() {
     post(&path).send_bytes(&[0]).ok().unwrap();
 }
 
+pub fn previous_track() {
+    let path = [BASE_URL, "/previous"].join("");
+
+    post(&path).send_bytes(&[0]).ok().unwrap();
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AltAlbum {
