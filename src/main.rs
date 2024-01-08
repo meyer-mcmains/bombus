@@ -1,5 +1,5 @@
 use bombus_data::*;
-use slint::{Image, Model, ModelRc, VecModel};
+use slint::{Image, Model, ModelRc, SharedPixelBuffer, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
 use std::{
     path::Path,
@@ -17,6 +17,8 @@ const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
     hwnd: None,
 };
 
+const PLACEHOLDER_IMAGE: &[u8; 32346] = include_bytes!("./assets/cover.jpg");
+
 /**
  * load the album cover based the artist and album title
  * setting the fallback if the cover does not exist
@@ -24,10 +26,19 @@ const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
 fn load_cover(artist: &str, album: &str) -> Image {
     let safe_artist = artist.replace('/', "_");
     let safe_album = album.replace('/', "_");
-    let fallback_cover = Image::load_from_path(Path::new("./src/assets/cover.jpg")).unwrap();
+    let source_image = image::load_from_memory(PLACEHOLDER_IMAGE)
+        .unwrap()
+        .into_rgba8();
+    let fallback_cover = slint::Image::from_rgba8(SharedPixelBuffer::clone_from_slice(
+        source_image.as_raw(),
+        source_image.width(),
+        source_image.height(),
+    ));
+
+    let artwork_cache = get_artwork_cache_directory();
 
     Image::load_from_path(
-        &Path::new("./artwork")
+        &artwork_cache
             .join(safe_artist)
             .join(safe_album)
             .with_extension("jpg"),

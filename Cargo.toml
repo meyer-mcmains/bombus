@@ -1,5 +1,5 @@
 [package]
-name = "bombus-slint"
+name = "bombus"
 version = "0.1.0"
 authors = ["mmcmains <mmcmains@gsandf.com>"]
 edition = "2021"
@@ -16,6 +16,7 @@ slint = { version = "1.0", default-features = false, features = [
 ] }
 souvlaki = "0.7.0"
 bombus-data = { path = "bombus-data" }
+image = { version = "0.24.7", default-features = false, features = ["jpeg"] }
 
 [build-dependencies]
 slint-build = "1.0"

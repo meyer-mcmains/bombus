@@ -6,6 +6,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use directories::ProjectDirs;
 use native_tls::TlsStream;
 use serde::{Deserialize, Serialize};
 
@@ -62,6 +63,15 @@ pub fn get_library() -> Result<Vec<Root>, Error> {
     Ok(json)
 }
 
+/**
+ * return the location of the artwork cache
+ */
+pub fn get_artwork_cache_directory() -> PathBuf {
+    let project_dirs = ProjectDirs::from("app", "Meyer McMains", "Bombus").unwrap();
+    let artwork_cache = project_dirs.cache_dir().join(Path::new("artwork"));
+    artwork_cache
+}
+
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Cover {
@@ -76,8 +86,10 @@ pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
     let os_artist = OsStr::new(&safe_artist);
     let os_album = OsStr::new(&safe_album);
 
+    let artwork_cache = get_artwork_cache_directory();
+
     // create path to file
-    let file = Path::new("artwork")
+    let file = artwork_cache
         .join(os_artist)
         .join(os_album)
         .with_extension("jpg");
@@ -94,7 +106,7 @@ pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
 
         let bytes = base64::decode(json.data).unwrap();
 
-        fs::create_dir_all(Path::new("artwork").join(os_artist))?;
+        fs::create_dir_all(artwork_cache.join(os_artist))?;
 
         let mut buffer = File::create(file.clone())?;
         buffer.write_all(&bytes)?;
