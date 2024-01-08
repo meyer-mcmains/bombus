@@ -12,7 +12,7 @@ export component AppWindow inherits Window {
     min-width: Grid.outer-width;
     min-height: Grid.outer-height;
 
-    ScrollView {
+    scroll-view := ScrollView {
         property <int> items_per_row: Math.floor(parent.width / Grid.outer-width);
         property <int> rows: Math.ceil(albums.length / items-per-row);
         // caculate the remaining width so we can manually center the items
@@ -34,15 +34,23 @@ export component AppWindow inherits Window {
         }
 
         // loop over albums creating the grid
-        for album [index] in albums: Rectangle {
+        for album [index] in albums: touch := TouchArea {
             property <length> pos-y: Math.floor(index / items-per-row) * Grid.outer-height;
             x: mod(index, items-per-row) * Grid.outer-width + offset-x;
             y: pos-y > selected-y ? pos-y + album-layout.min-height + 24px : pos-y;
             height: Grid.outer-height;
             width: Grid.outer-width;
+            mouse-cursor: pointer;
+            clicked => {
+                scroll-view.viewport-y = - pos-y;
+                Logic.album-clicked(index, album);
+            }
+
             cover := Cover {
                 album: albums[index];
                 index: index;
+                touch-has-hover: touch.has-hover;
+                touch-pressed: touch.pressed;
             }
         }
     }
