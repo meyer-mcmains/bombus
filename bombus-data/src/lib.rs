@@ -116,6 +116,12 @@ pub fn play_album(artist: &str, album: &str) {
         .unwrap();
 }
 
+pub fn play_pause() {
+    let path = [BASE_URL, "/play-pause"].join("");
+
+    post(&path).send_bytes(&[0]).ok().unwrap();
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AltAlbum {
