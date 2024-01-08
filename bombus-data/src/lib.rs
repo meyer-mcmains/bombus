@@ -122,6 +122,12 @@ pub fn play_pause() {
     post(&path).send_bytes(&[0]).ok().unwrap();
 }
 
+pub fn next_track() {
+    let path = [BASE_URL, "/next"].join("");
+
+    post(&path).send_bytes(&[0]).ok().unwrap();
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AltAlbum {
