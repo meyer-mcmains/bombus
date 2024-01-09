@@ -67,7 +67,7 @@ pub fn get_library() -> Result<Vec<Root>, Error> {
  * return the location of the artwork cache
  */
 pub fn get_artwork_cache_directory() -> PathBuf {
-    let project_dirs = ProjectDirs::from("app", "Meyer McMains", "Bombus").unwrap();
+    let project_dirs = ProjectDirs::from("app", "meyer-mcmains", "bombus").unwrap();
     let artwork_cache = project_dirs.cache_dir().join(Path::new("artwork"));
     artwork_cache
 }
