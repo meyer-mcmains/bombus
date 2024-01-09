@@ -3,7 +3,7 @@ use std::{
     fs::{self, File},
     io::Write,
     net::TcpStream,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use directories::ProjectDirs;
@@ -17,6 +17,22 @@ use ureq::{get, post, Error};
 
 const BASE_URL: &str = "http://192.168.86.57:1200";
 const BASE_SOCKET: &str = "ws://192.168.86.57:1201";
+
+/**
+ * get the project cache directory
+ */
+fn get_cache_directory() -> PathBuf {
+    let project_dirs = ProjectDirs::from("app", "meyer-mcmains", "bombus").unwrap();
+    PathBuf::from(project_dirs.cache_dir())
+}
+
+/**
+ * return the location of the artwork cache
+ */
+pub fn get_artwork_cache_directory() -> PathBuf {
+    let artwork_cache = get_cache_directory().join("artwork");
+    artwork_cache
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -59,17 +75,10 @@ pub fn get_library() -> Result<Vec<Root>, Error> {
         acc
     });
 
-    serde_json::to_writer(&File::create("library.json").unwrap(), &albums).unwrap();
-    Ok(json)
-}
+    let library_path = get_cache_directory().join("library.json");
 
-/**
- * return the location of the artwork cache
- */
-pub fn get_artwork_cache_directory() -> PathBuf {
-    let project_dirs = ProjectDirs::from("app", "meyer-mcmains", "bombus").unwrap();
-    let artwork_cache = project_dirs.cache_dir().join(Path::new("artwork"));
-    artwork_cache
+    serde_json::to_writer(&File::create(library_path).unwrap(), &albums).unwrap();
+    Ok(json)
 }
 
 #[derive(Clone, Debug, Deserialize)]
