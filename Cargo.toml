@@ -1,7 +1,8 @@
 [package]
 name = "bombus"
+description = "A thin client for MusicBee."
 version = "0.1.0"
-authors = ["mmcmains <mmcmains@gsandf.com>"]
+authors = ["meyer-mcmains <meyer.mcmains@gmail.com>"]
 edition = "2021"
 build = "build.rs"
 
@@ -20,3 +21,7 @@ image = { version = "0.24.7", default-features = false, features = ["jpeg"] }
 
 [build-dependencies]
 slint-build = "1.0"
+
+[package.metadata.bundle]
+name = "Bombus"
+identifier = "app.meyer-mcmains.bombus"
