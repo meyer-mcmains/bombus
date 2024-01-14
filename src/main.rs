@@ -226,9 +226,8 @@ fn main() -> Result<(), slint::PlatformError> {
         let mut socket = create_socket();
 
         loop {
-            // read socket message
-            let msg = socket.read_message().expect("Error reading message");
-            let notification = notification_to_json(msg.into_text().unwrap());
+            let message = socket.read_message().expect("Error reading message");
+            let notification = notification_to_json(message.into_text().unwrap());
 
             // fire event
             match notification.notification_type {
