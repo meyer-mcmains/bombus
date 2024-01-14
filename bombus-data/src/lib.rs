@@ -187,7 +187,7 @@ pub fn create_socket() -> WebSocket<Stream<TcpStream, TlsStream<TcpStream>>> {
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub enum NotificationTypes {
-    Startup,
+    PluginStartup,
     PlayCountersChanged,
     TrackChanged,
     NowPlayingListEnded,

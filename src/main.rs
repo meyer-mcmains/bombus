@@ -234,7 +234,7 @@ fn main() -> Result<(), slint::PlatformError> {
                 NotificationTypes::PlayStateChanged => {
                     handle_play_state_change(&mut controls, notification);
                 }
-                NotificationTypes::Startup
+                NotificationTypes::PluginStartup
                 | NotificationTypes::TrackChanged
                 | NotificationTypes::PlayingTracksChanged
                 | NotificationTypes::NowPlayingListChanged => {
