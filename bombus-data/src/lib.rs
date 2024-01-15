@@ -1,3 +1,10 @@
+use directories::ProjectDirs;
+use native_tls::TlsStream;
+use reqwest::{
+    blocking::{Client, RequestBuilder},
+    Error,
+};
+use serde::{Deserialize, Serialize};
 use std::{
     ffi::OsStr,
     fs::{self, File},
@@ -5,11 +12,6 @@ use std::{
     net::TcpStream,
     path::PathBuf,
 };
-
-use directories::ProjectDirs;
-use native_tls::TlsStream;
-use serde::{Deserialize, Serialize};
-
 use tungstenite::{connect, stream::Stream, WebSocket};
 
 //https://transform.tools/json-to-rust-serde
