@@ -25,3 +25,4 @@ slint-build = "1.0"
 [package.metadata.bundle]
 name = "Bombus"
 identifier = "app.meyer-mcmains.bombus"
+icon = ["src/assets/icon.png"]
