@@ -11,12 +11,31 @@ use native_tls::TlsStream;
 use serde::{Deserialize, Serialize};
 
 use tungstenite::{connect, stream::Stream, WebSocket};
-use ureq::{get, post, Error};
 
 //https://transform.tools/json-to-rust-serde
 
 const BASE_URL: &str = "http://192.168.86.57:1200";
 const BASE_SOCKET: &str = "ws://192.168.86.57:1201";
+
+/// create and return a http client
+fn create_client() -> Client {
+    // get a client builder
+    Client::builder().build().unwrap()
+}
+
+/// make a GET request to the BASE_URL at a specific path
+///
+/// # Example
+/// ```
+/// let response = get("cool/endpoint").send().await;
+/// ```
+fn get(path: &str) -> RequestBuilder {
+    create_client().get(format!("{BASE_URL}/api/{path}"))
+}
+
+fn post(path: &str) -> RequestBuilder {
+    create_client().post(format!("{BASE_URL}/api/{path}"))
+}
 
 /**
  * get the project cache directory
