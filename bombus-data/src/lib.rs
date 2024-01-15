@@ -17,7 +17,7 @@ use tungstenite::{connect, stream::Stream, WebSocket};
 //https://transform.tools/json-to-rust-serde
 
 const BASE_URL: &str = "http://192.168.86.57:1200";
-const BASE_SOCKET: &str = "ws://192.168.86.57:1201";
+const BASE_SOCKET: &str = "ws://192.168.86.57:1200/notification";
 
 /// create and return a http client
 fn create_client() -> Client {
@@ -56,14 +56,14 @@ pub fn get_artwork_cache_directory() -> PathBuf {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct Root {
     pub artist: String,
     pub albums: Vec<Album>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct Album {
     pub album_id: String,
     pub title: String,
@@ -74,7 +74,7 @@ pub struct Album {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct Track {
     pub track_id: String,
     pub artist: String,
@@ -86,8 +86,9 @@ pub struct Track {
 }
 
 pub fn get_library() -> Result<Vec<Root>, Error> {
-    let path = [BASE_URL, "/library"].join("");
-    let json: Vec<Root> = get(&path).call()?.into_json()?;
+    let response = get("library").send()?;
+    let json = response.json::<Vec<Root>>()?;
+
     // uncomment below to pull library from file
     // let json: Vec<Root> =
     //     serde_json::from_reader(&File::open("offline_library.json").unwrap()).unwrap();
@@ -125,21 +126,14 @@ pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
         .with_extension("jpg");
 
     if !file.exists() {
-        let path = [BASE_URL, "/artwork"].join("");
+        let params = [("artist", artist), ("album", album), ("thumbnail", "true")];
+        let response = get("artwork").form(&params).send()?;
+        let bytes = response.bytes()?;
 
-        let json: Cover = get(&path)
-            .query("artist", artist)
-            .query("album", album)
-            .query("thumbnail", "true")
-            .call()?
-            .into_json()?;
+        fs::create_dir_all(artwork_cache.join(os_artist)).unwrap();
 
-        let bytes = base64::decode(json.data).unwrap();
-
-        fs::create_dir_all(artwork_cache.join(os_artist))?;
-
-        let mut buffer = File::create(file.clone())?;
-        buffer.write_all(&bytes)?;
+        let mut buffer = File::create(file.clone()).unwrap();
+        buffer.write_all(&bytes).unwrap();
 
         return Ok((false, file));
     }
@@ -148,32 +142,20 @@ pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
 }
 
 pub fn play_album(artist: &str, album: &str) {
-    let path = [BASE_URL, "/play-album"].join("");
-
-    post(&path)
-        .query("artist", artist)
-        .query("album", album)
-        .send_bytes(&[0])
-        .ok()
-        .unwrap();
+    let params = [("artist", artist), ("album", album)];
+    post("play-album").form(&params).send().unwrap();
 }
 
 pub fn play_pause() {
-    let path = [BASE_URL, "/play-pause"].join("");
-
-    post(&path).send_bytes(&[0]).ok().unwrap();
+    post("play-pause").send().unwrap();
 }
 
 pub fn next_track() {
-    let path = [BASE_URL, "/next"].join("");
-
-    post(&path).send_bytes(&[0]).ok().unwrap();
+    post("next-track").send().unwrap();
 }
 
 pub fn previous_track() {
-    let path = [BASE_URL, "/previous"].join("");
-
-    post(&path).send_bytes(&[0]).ok().unwrap();
+    post("previous-track").send().unwrap();
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -230,19 +212,19 @@ fn default_notification_position() -> u64 {
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct Notification {
     pub play_state: PlayState,
     #[serde(default = "default_notification_position")]
     pub position: u64,
-    #[serde(rename = "notification")]
+    #[serde(rename = "Notification")]
     pub notification_type: NotificationTypes,
     #[serde(default = "default_notification_position")]
     pub duration: u64,
     pub artist: String,
     pub album: String,
     pub track: String,
-    pub sound_graph: Vec<f64>,
+    // pub sound_graph: Vec<f64>,
 }
 
 pub fn notification_to_json(notification: String) -> Notification {
