@@ -25,31 +25,23 @@ fn create_client() -> Client {
     Client::builder().build().unwrap()
 }
 
-/// make a GET request to the BASE_URL at a specific path
-///
-/// # Example
-/// ```
-/// let response = get("cool/endpoint").send().await;
-/// ```
+/// make a GET request to the BASE_URL at a specific path``
 fn get(path: &str) -> RequestBuilder {
     create_client().get(format!("{BASE_URL}/api/{path}"))
 }
 
+/// make a POST request to the BASE_URL at a specific path
 fn post(path: &str) -> RequestBuilder {
     create_client().post(format!("{BASE_URL}/api/{path}"))
 }
 
-/**
- * get the project cache directory
- */
+/// get the project cache directory
 fn get_cache_directory() -> PathBuf {
     let project_dirs = ProjectDirs::from("app", "meyer-mcmains", "bombus").unwrap();
     PathBuf::from(project_dirs.cache_dir())
 }
 
-/**
- * return the location of the artwork cache
- */
+/// return the location of the artwork cache
 pub fn get_artwork_cache_directory() -> PathBuf {
     let artwork_cache = get_cache_directory().join("artwork");
     artwork_cache
