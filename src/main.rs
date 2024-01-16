@@ -1,5 +1,6 @@
+use crate::utils::slint_modules::{Album, AppWindow, Logic, Theme, Track};
 use bombus_data::*;
-use slint::{Image, Model, ModelRc, SharedPixelBuffer, VecModel};
+use slint::{ComponentHandle, Image, Model, ModelExt, ModelRc, SharedPixelBuffer, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
 use std::{
     path::Path,
@@ -9,7 +10,7 @@ use std::{
     time::Duration,
 };
 
-slint::include_modules!();
+mod utils;
 
 const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
     dbus_name: "bombus",
