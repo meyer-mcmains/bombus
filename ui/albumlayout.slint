@@ -67,10 +67,13 @@ export component AlbumLayout inherits VerticalLayout {
                 }
 
                 HorizontalLayout {
+                    property <length> track-spacing: 3px;
                     spacing: 12px;
                     VerticalLayout {
+                        spacing: track-spacing;
                         for track [index] in album.tracks: Rectangle {
-                            height: index < tracks-first-column-length ? 32px : 0px;
+                            height: index < tracks-first-column-length ? 32px : 0;
+                            visible: index < tracks-first-column-length;
                             if index < tracks-first-column-length: TrackLayout {
                                 track: track;
                             }
@@ -78,9 +81,14 @@ export component AlbumLayout inherits VerticalLayout {
                     }
 
                     VerticalLayout {
+                        spacing: 3px;
+
                         for track [index] in album.tracks: Rectangle {
-                            height: index >= tracks-first-column-length ? 32px : 0px;
+                            height: index >= tracks-first-column-length ? 32px : 0;
+                            visible: index >= tracks-first-column-length;
                             if index >= tracks-first-column-length: TrackLayout {
+                                // take into account the offset off extra items
+                                y: index >= tracks-first-column-length ? tracks-first-column-length * track-spacing * -1 : 0;
                                 track: track;
                             }
                         }
