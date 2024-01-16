@@ -12,19 +12,44 @@ export struct Album {
     image: image
 }
 
+export struct Color {
+    label_quaternary: color,
+    label_secondary: color,
+    label_tertiary: color,
+    label: color,
+    link: color,
+    placeholder_text: color,
+    separator: color,
+    system_blue: color,
+    system_brown: color,
+    system_fill_quaternary: color,
+    system_fill_secondary: color,
+    system_fill_tertiary: color,
+    system_fill: color,
+    system_white: color,
+    system_black: color,
+    system_gray: color,
+    system_green: color,
+    system_indigo: color,
+    system_orange: color,
+    system_pink: color,
+    system_purple: color,
+    system_red: color,
+    system_teal: color,
+    system_yellow: color,
+    under_page_background: color,
+    window_background: color,
+}
+
+export global Theme {
+    in-out property <Color> color;
+}
+
 export global Grid {
     in-out property <length> inner-size: 264px;
     in-out property <length> spacing: 16px;
     in-out property <length> outer-height: inner-size + spacing * 2;
     in-out property <length> outer-width: inner-size + spacing * 2;
-}
-
-// https://developer.apple.com/design/human-interface-guidelines/color#iOS-iPadOS-system-gray-colors
-export global Theme {
-    out property <color> system-grey-4: rgb(58, 58, 60);
-    out property <color> system-grey-5: rgb(44, 44, 46);
-    out property <color> system-grey-6: rgb(28, 28, 30);
-    out property <color> focus: rgb(22, 135, 243);
 }
 
 export global Logic {

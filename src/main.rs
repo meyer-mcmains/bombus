@@ -1,4 +1,5 @@
 use crate::utils::slint_modules::{Album, AppWindow, Logic, Theme, Track};
+use crate::utils::theme::get_theme;
 use bombus_data::*;
 use slint::{ComponentHandle, Image, Model, ModelExt, ModelRc, SharedPixelBuffer, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
@@ -80,6 +81,9 @@ fn handle_play_state_change(controls: &mut MediaControls, notification: Notifica
 
 fn main() -> Result<(), slint::PlatformError> {
     let window = AppWindow::new()?;
+
+    let color = get_theme();
+    window.global::<Theme>().set_color(color);
 
     // load the library
     let library = get_library().unwrap();
