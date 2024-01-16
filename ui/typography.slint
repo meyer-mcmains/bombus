@@ -1,8 +1,11 @@
+import { Theme } from "./global.slint";
+
 // https://developer.apple.com/design/human-interface-guidelines/typography#macOS-built-in-text-styles
 
 export component LargeTitle inherits Text {
     font-size: 26px;
     horizontal-alignment: left;
+    color: Theme.color.label;
 }
 
 export component Headline inherits Text {
@@ -10,18 +13,21 @@ export component Headline inherits Text {
     font-size: 13px;
     font-weight: 100;
     horizontal-alignment: left;
+    color: Theme.color.label-secondary;
 }
 
 export component Body inherits Text {
     font-size: 15px;
     font-weight: 500;
     horizontal-alignment: left;
+    color: Theme.color.system-white;
 }
 
 export component BodySmall inherits Body {
     font-size: 13px;
     font-weight: 400;
     horizontal-alignment: left;
+    color: Theme.color.label-tertiary;
 }
 
 export component BodySmallMono inherits BodySmall {

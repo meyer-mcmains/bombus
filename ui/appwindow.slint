@@ -1,15 +1,15 @@
 import { ScrollView } from "std-widgets.slint";
-import { Grid, Logic, Const, Album, Theme } from "global.slint";
+import { Grid, Logic, Const, Album, Theme, Color } from "global.slint";
 import { Cover } from "cover.slint";
 import { AlbumLayout } from "albumlayout.slint";
 
-export { Logic, Theme }
+export { Logic, Theme, Color }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;
     in property <int> selected-index;
     title: "Bombus";
-    background: Theme.system-grey-6;
+    background: Theme.color.window-background.darker(1.0);
     min-width: Grid.outer-width;
     min-height: Grid.outer-height;
 

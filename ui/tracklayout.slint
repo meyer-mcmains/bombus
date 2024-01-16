@@ -4,9 +4,9 @@ import { Body, BodySmallMono } from "typography.slint";
 export component TrackLayout inherits Rectangle {
     in property <Track> track;
     property <length> left-right-padding: 8px;
-    background:  touch.has-hover ? Theme.focus : Theme.system-grey-4;
     border-color: Theme.system-grey-5;
     border-width: 2px;
+    background: touch.has-hover ? Theme.color.system-blue : Theme.color.system-fill-tertiary;
 
     HorizontalLayout {
         padding-left: left-right-padding;
@@ -31,7 +31,7 @@ export component TrackLayout inherits Rectangle {
                     y: 6px;
                     height: parent.height - 12px;
                     width: 2px;
-                    background: Theme.system-grey-5;
+                    background: Theme.color.separator;
                 }
             }
 
