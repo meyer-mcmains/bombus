@@ -19,10 +19,8 @@ const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
 
 const PLACEHOLDER_IMAGE: &[u8; 32346] = include_bytes!("./assets/cover.jpg");
 
-/**
- * load the album cover based the artist and album title
- * setting the fallback if the cover does not exist
- */
+/// load the album cover based the artist and album title
+/// setting the fallback if the cover does not exist
 fn load_cover(artist: &str, album: &str) -> Image {
     let safe_artist = artist.replace('/', "_");
     let safe_album = album.replace('/', "_");
@@ -46,9 +44,7 @@ fn load_cover(artist: &str, album: &str) -> Image {
     .unwrap_or(fallback_cover)
 }
 
-/**
- * load the album cover from an already verified path
- */
+/// load the album cover from an already verified path
 fn load_cover_from_path(path: &Path) -> Image {
     Image::load_from_path(path).unwrap()
 }
