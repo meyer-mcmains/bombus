@@ -81,7 +81,7 @@ export component AlbumLayout inherits VerticalLayout {
                     }
 
                     VerticalLayout {
-                        spacing: 3px;
+                        spacing: track-spacing;
 
                         for track [index] in album.tracks: Rectangle {
                             height: index >= tracks-first-column-length ? 32px : 0;
