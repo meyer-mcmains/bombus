@@ -7,7 +7,7 @@ export { Logic, Theme, Color }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;
-    in property <int> selected-index;
+    in property <int> selected-index: Const.i32-max;
     title: "Bombus";
     background: Theme.color.window-background.darker(1.0);
     min-width: Grid.outer-width;
