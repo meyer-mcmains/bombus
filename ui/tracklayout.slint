@@ -36,16 +36,21 @@ export component TrackLayout inherits Rectangle {
             Body {
                 vertical-alignment: center;
                 horizontal-alignment: left;
+                overflow: elide;
                 text: track.name;
             }
         }
 
-        BodySmallMono {
-            opacity: 0.75;
-            vertical-alignment: center;
-            horizontal-alignment: left;
-            text: track.duration;
-            font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
+        HorizontalLayout {
+            padding-left: 8px;
+
+            BodySmallMono {
+                opacity: 0.75;
+                vertical-alignment: center;
+                horizontal-alignment: left;
+                text: track.duration;
+                font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
+            }
         }
     }
 
