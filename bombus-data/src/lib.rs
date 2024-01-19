@@ -216,6 +216,7 @@ pub struct Notification {
     pub artist: String,
     pub album: String,
     pub track: String,
+    pub source_file: String,
     // pub sound_graph: Vec<f64>,
 }
 

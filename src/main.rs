@@ -51,7 +51,7 @@ fn load_cover_from_path(path: &Path) -> Image {
     Image::load_from_path(path).unwrap()
 }
 
-fn handle_play_state_change(controls: &mut MediaControls, notification: Notification) {
+fn handle_play_state_change(controls: &mut MediaControls, notification: &Notification) {
     match notification.play_state {
         PlayState::Paused => {
             controls
@@ -108,6 +108,7 @@ fn main() -> Result<(), slint::PlatformError> {
                                 duration: track.length.into(),
                                 name: track.name.into(),
                                 number: track.number as i32,
+                                source_file: track.path.into(),
                             })
                             .collect();
 
@@ -223,6 +224,7 @@ fn main() -> Result<(), slint::PlatformError> {
         })
         .unwrap();
 
+    let window_handle_weak = window.as_weak();
     thread::spawn(move || {
         let mut socket = create_socket();
 
@@ -233,7 +235,7 @@ fn main() -> Result<(), slint::PlatformError> {
             // fire event
             match notification.notification_type {
                 NotificationTypes::PlayStateChanged => {
-                    handle_play_state_change(&mut controls, notification);
+                    handle_play_state_change(&mut controls, &notification);
                 }
                 NotificationTypes::PluginStartup
                 | NotificationTypes::TrackChanged
@@ -256,7 +258,15 @@ fn main() -> Result<(), slint::PlatformError> {
                         })
                         .unwrap();
 
-                    handle_play_state_change(&mut controls, notification);
+                    handle_play_state_change(&mut controls, &notification);
+
+                    window_handle_weak
+                        .upgrade_in_event_loop(move |window| {
+                            window
+                                .global::<Logic>()
+                                .set_now_playing_track(notification.source_file.into())
+                        })
+                        .unwrap();
                 }
                 // if these notifications are ever relevant do something with them
                 NotificationTypes::PlayCountersChanged

@@ -29,7 +29,7 @@ export component TrackLayout inherits Rectangle {
                     y: 6px;
                     height: parent.height - 12px;
                     width: 2px;
-                    background: Theme.color.separator;
+                    background: Logic.now-playing-track == track.source-file ? Theme.color.system-blue : Theme.color.separator;
                 }
             }
 
