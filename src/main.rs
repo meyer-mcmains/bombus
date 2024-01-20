@@ -1,7 +1,9 @@
 use crate::utils::slint_modules::{Album, AppWindow, Logic, Theme, Track};
 use crate::utils::theme::get_theme;
 use bombus_data::*;
-use slint::{ComponentHandle, Image, Model, ModelExt, ModelRc, SharedPixelBuffer, VecModel};
+use slint::{
+    ComponentHandle, Image, Model, ModelExt, ModelRc, SharedPixelBuffer, SharedString, VecModel,
+};
 use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
 use std::{
     path::Path,
@@ -51,7 +53,13 @@ fn load_cover_from_path(path: &Path) -> Image {
     Image::load_from_path(path).unwrap()
 }
 
-fn handle_play_state_change(controls: &mut MediaControls, notification: &Notification) {
+fn handle_play_state_change<F>(
+    controls: &mut MediaControls,
+    notification: &Notification,
+    clear_now_playing_track: F,
+) where
+    F: FnOnce(),
+{
     match notification.play_state {
         PlayState::Paused => {
             controls
@@ -72,6 +80,8 @@ fn handle_play_state_change(controls: &mut MediaControls, notification: &Notific
                 .unwrap();
         }
         PlayState::Stopped => {
+            clear_now_playing_track();
+
             controls
                 .set_playback(souvlaki::MediaPlayback::Stopped)
                 .unwrap();
@@ -235,7 +245,17 @@ fn main() -> Result<(), slint::PlatformError> {
             // fire event
             match notification.notification_type {
                 NotificationTypes::PlayStateChanged => {
-                    handle_play_state_change(&mut controls, &notification);
+                    let clear_now_playing_track = || {
+                        window_handle_weak
+                            .upgrade_in_event_loop(move |window| {
+                                window
+                                    .global::<Logic>()
+                                    .set_now_playing_track(SharedString::from(""))
+                            })
+                            .unwrap()
+                    };
+
+                    handle_play_state_change(&mut controls, &notification, clear_now_playing_track);
                 }
                 NotificationTypes::PluginStartup
                 | NotificationTypes::TrackChanged
@@ -258,7 +278,7 @@ fn main() -> Result<(), slint::PlatformError> {
                         })
                         .unwrap();
 
-                    handle_play_state_change(&mut controls, &notification);
+                    handle_play_state_change(&mut controls, &notification, || { /* do nothing */ });
 
                     if !notification.source_file.is_empty() {
                         window_handle_weak
