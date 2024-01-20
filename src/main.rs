@@ -99,6 +99,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
                 // transform the library into structs that can be consumed by the ui
                 // TODO serialize into the UI structs directly
+                // NOTE image does not currently implement serialize
                 library.into_iter().for_each(|artist| {
                     artist.albums.into_iter().for_each(|album| {
                         let tracks: Vec<Track> = album
