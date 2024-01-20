@@ -143,7 +143,6 @@ fn main() -> Result<(), slint::PlatformError> {
 
                     let (exists, path) = get_cover(&album.artist, &album.title).unwrap();
 
-                    // TODO skip event loop is cover already exists
                     if !exists {
                         window_handle
                             .upgrade_in_event_loop(move |handle| {
