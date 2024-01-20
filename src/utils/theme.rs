@@ -1,7 +1,7 @@
+use crate::utils::slint_modules::Color;
 use cacao::core_foundation::base::TCFType;
 use regex::Regex;
 
-use crate::utils::slint_modules::Color;
 trait ToRgbaColor {
     fn to_rgba_color(&self) -> slint::Color;
 }
@@ -31,7 +31,7 @@ impl ToRgbaColor for cacao::color::Color {
 }
 
 /// get the system colors from macos
-pub fn get_theme() -> Color {
+pub fn get() -> Color {
     Color {
         // these are crashing
         // system_background_tertiary: cacao::color::Color::SystemBackgroundTertiary.to_rgba_color(),

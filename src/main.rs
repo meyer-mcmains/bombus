@@ -1,18 +1,18 @@
-use crate::utils::slint_modules::{Album, AppWindow, Logic, Theme, Track};
-use crate::utils::theme::get_theme;
-use bombus_data::*;
-use slint::{
-    ComponentHandle, Image, Model, ModelExt, ModelRc, SharedPixelBuffer, SharedString, VecModel,
-};
-use souvlaki::{MediaControlEvent, MediaControls, MediaMetadata, PlatformConfig};
 use std::{
-    path::Path,
     rc::Rc,
     sync::{Arc, Mutex},
     thread,
-    time::Duration,
 };
 
+use bombus_data::*;
+use slint::{ComponentHandle, Model, ModelExt, ModelRc, VecModel};
+use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
+
+use utils::album_cover;
+use utils::slint_modules::{Album, AppWindow, Logic, Theme, Track};
+use utils::theme;
+
+mod notifications;
 mod utils;
 
 const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
@@ -21,78 +21,10 @@ const PLATFORM_CONFIG: souvlaki::PlatformConfig<'_> = PlatformConfig {
     hwnd: None,
 };
 
-const PLACEHOLDER_IMAGE: &[u8; 32346] = include_bytes!("./assets/cover.jpg");
-
-/// load the album cover based the artist and album title
-/// setting the fallback if the cover does not exist
-fn load_cover(artist: &str, album: &str) -> Image {
-    let safe_artist = artist.replace('/', "_");
-    let safe_album = album.replace('/', "_");
-    let source_image = image::load_from_memory(PLACEHOLDER_IMAGE)
-        .unwrap()
-        .into_rgba8();
-    let fallback_cover = slint::Image::from_rgba8(SharedPixelBuffer::clone_from_slice(
-        source_image.as_raw(),
-        source_image.width(),
-        source_image.height(),
-    ));
-
-    let artwork_cache = get_artwork_cache_directory();
-
-    Image::load_from_path(
-        &artwork_cache
-            .join(safe_artist)
-            .join(safe_album)
-            .with_extension("jpg"),
-    )
-    .unwrap_or(fallback_cover)
-}
-
-/// load the album cover from an already verified path
-fn load_cover_from_path(path: &Path) -> Image {
-    Image::load_from_path(path).unwrap()
-}
-
-fn handle_play_state_change<F>(
-    controls: &mut MediaControls,
-    notification: &Notification,
-    clear_now_playing_track: F,
-) where
-    F: FnOnce(),
-{
-    match notification.play_state {
-        PlayState::Paused => {
-            controls
-                .set_playback(souvlaki::MediaPlayback::Paused {
-                    progress: Some(souvlaki::MediaPosition(Duration::from_millis(
-                        notification.position,
-                    ))),
-                })
-                .unwrap();
-        }
-        PlayState::Playing => {
-            controls
-                .set_playback(souvlaki::MediaPlayback::Playing {
-                    progress: Some(souvlaki::MediaPosition(Duration::from_millis(
-                        notification.position,
-                    ))),
-                })
-                .unwrap();
-        }
-        PlayState::Stopped => {
-            clear_now_playing_track();
-
-            controls
-                .set_playback(souvlaki::MediaPlayback::Stopped)
-                .unwrap();
-        }
-    }
-}
-
 fn main() -> Result<(), slint::PlatformError> {
     let window = AppWindow::new()?;
 
-    let color = get_theme();
+    let color = theme::get();
     window.global::<Theme>().set_color(color);
 
     // load the library
@@ -123,7 +55,7 @@ fn main() -> Result<(), slint::PlatformError> {
                             })
                             .collect();
 
-                        let image = load_cover(&album.artist, &album.title);
+                        let image = album_cover::load(&album.artist, &album.title);
 
                         let album: Album = Album {
                             id: album.album_id.into(),
@@ -170,7 +102,7 @@ fn main() -> Result<(), slint::PlatformError> {
                                 if let Some(row) = ui_album_index {
                                     ui_albums.row_data_tracked(row);
                                     let mut data = ui_albums.row_data(row).unwrap();
-                                    data.image = load_cover_from_path(&path);
+                                    data.image = album_cover::load_from_path(&path);
                                     ui_albums.set_row_data(row, data);
                                 }
                             })
@@ -205,6 +137,7 @@ fn main() -> Result<(), slint::PlatformError> {
             play_album(&album.artist, &album.title);
         });
 
+    // on track clicked
     window
         .global::<Logic>()
         .on_track_clicked(move |track: Track| {
@@ -234,69 +167,9 @@ fn main() -> Result<(), slint::PlatformError> {
         })
         .unwrap();
 
+    // listen for notifications from musicbee
     let window_handle_weak = window.as_weak();
-    thread::spawn(move || {
-        let mut socket = create_socket();
-
-        loop {
-            let message = socket.read_message().expect("Error reading message");
-            let notification = notification_to_json(message.into_text().unwrap());
-
-            // fire event
-            match notification.notification_type {
-                NotificationTypes::PlayStateChanged => {
-                    let clear_now_playing_track = || {
-                        window_handle_weak
-                            .upgrade_in_event_loop(move |window| {
-                                window
-                                    .global::<Logic>()
-                                    .set_now_playing_track(SharedString::from(""))
-                            })
-                            .unwrap()
-                    };
-
-                    handle_play_state_change(&mut controls, &notification, clear_now_playing_track);
-                }
-                NotificationTypes::PluginStartup
-                | NotificationTypes::TrackChanged
-                | NotificationTypes::PlayingTracksChanged
-                | NotificationTypes::NowPlayingListChanged => {
-                    let (_exists, path) =
-                        get_cover(&notification.artist, &notification.album).unwrap();
-
-                    let mut cover_path: String = "file://".to_owned();
-                    let canonical_path = path.canonicalize().unwrap();
-                    cover_path.push_str(canonical_path.to_str().unwrap());
-
-                    controls
-                        .set_metadata(MediaMetadata {
-                            title: Some(&notification.track),
-                            artist: Some(&notification.artist),
-                            album: Some(&notification.album),
-                            duration: Some(Duration::from_millis(notification.duration)),
-                            cover_url: Some(&cover_path),
-                        })
-                        .unwrap();
-
-                    handle_play_state_change(&mut controls, &notification, || { /* do nothing */ });
-
-                    if !notification.source_file.is_empty() {
-                        window_handle_weak
-                            .upgrade_in_event_loop(move |window| {
-                                window
-                                    .global::<Logic>()
-                                    .set_now_playing_track(notification.source_file.into())
-                            })
-                            .unwrap();
-                    }
-                }
-                // if these notifications are ever relevant do something with them
-                NotificationTypes::PlayCountersChanged
-                | NotificationTypes::NowPlayingListEnded
-                | NotificationTypes::VolumeLevelChanged => {}
-            }
-        }
-    });
+    thread::spawn(move || notifications::listen(window_handle_weak, &mut controls));
 
     window.run()
 }
