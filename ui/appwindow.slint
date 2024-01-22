@@ -2,6 +2,7 @@ import { ScrollView } from "std-widgets.slint";
 import { Grid, Logic, Const, Album, Theme, Color } from "global.slint";
 import { Cover } from "cover.slint";
 import { AlbumLayout } from "albumlayout.slint";
+import { Title3, BodySmall} from "typography.slint";
 
 export { Logic, Theme, Color }
 
@@ -35,23 +36,50 @@ export component AppWindow inherits Window {
         }
 
         // loop over albums creating the grid
-        for album [index] in albums: touch := TouchArea {
+        for album [index] in albums: VerticalLayout {
             property <length> pos-y: Math.floor(index / items-per-row) * Grid.outer-height;
             x: mod(index, items-per-row) * Grid.outer-width + offset-x;
             y: pos-y > selected-y ? pos-y + album-layout.min-height + 24px : pos-y;
             height: Grid.outer-height;
             width: Grid.outer-width;
-            mouse-cursor: pointer;
-            clicked => {
-                scroll-view.viewport-y = - pos-y;
-                Logic.album-clicked(index, album);
+            padding-left: Grid.spacing;
+            padding-right: Grid.spacing;
+            alignment: center;
+            spacing: 8px;
+
+            touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    scroll-view.viewport-y = - pos-y;
+                    Logic.album-clicked(index, album);
+                }
+
+                cover := Cover {
+                    album: albums[index];
+                    index: index;
+                    touch-has-hover: touch.has-hover;
+                    touch-pressed: touch.pressed;
+                }
             }
 
-            cover := Cover {
-                album: albums[index];
-                index: index;
-                touch-has-hover: touch.has-hover;
-                touch-pressed: touch.pressed;
+            VerticalLayout {
+                spacing: 4px;
+                padding-left: 8px;
+                padding-right: 8px;
+                alignment: start;
+
+                Title3 {
+                    overflow: elide;
+                    color: Theme.color.label-secondary;
+                    text: albums[index].title;
+                    horizontal-alignment: center;
+                }
+
+                BodySmall {
+                    overflow: elide;
+                    text: albums[index].artist;
+                    horizontal-alignment: center;
+                }
             }
         }
     }
