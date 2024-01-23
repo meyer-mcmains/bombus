@@ -4,7 +4,7 @@ use std::{
     thread,
 };
 
-use bombus_data::*;
+use bombus_data::{get_cover, get_library, next_track, play_album, play_pause, previous_track};
 use slint::{ComponentHandle, Model, ModelExt, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
@@ -48,17 +48,17 @@ fn main() -> Result<(), slint::PlatformError> {
                             .tracks
                             .into_iter()
                             .map(|track| Track {
-                                duration: track.length.into(),
-                                name: track.name.into(),
+                                length: track.length.into(),
+                                title: track.title.into(),
                                 number: track.number as i32,
-                                source_file: track.path.into(),
+                                uri: track.uri.into(),
                             })
                             .collect();
 
                         let image = album_cover::load(&album.artist, &album.title);
 
                         let album: Album = Album {
-                            id: album.album_id.into(),
+                            id: album.id.into(),
                             artist: album.artist.into(),
                             title: album.title.into(),
                             image,
@@ -97,7 +97,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
                                 let ui_album_index = ui_albums
                                     .iter()
-                                    .position(|ui_album| ui_album.id == album.album_id);
+                                    .position(|ui_album| ui_album.id == album.id);
 
                                 if let Some(row) = ui_album_index {
                                     ui_albums.row_data_tracked(row);
@@ -141,7 +141,7 @@ fn main() -> Result<(), slint::PlatformError> {
     window
         .global::<Logic>()
         .on_track_clicked(move |track: Track| {
-            println!("{}", track.name);
+            println!("{}", track.title);
         });
 
     let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();

@@ -29,7 +29,7 @@ export component TrackLayout inherits Rectangle {
                     y: 6px;
                     height: parent.height - 12px;
                     width: 2px;
-                    background: Logic.now-playing-track == track.source-file ? Theme.color.system-blue : Theme.color.separator;
+                    background: Logic.now-playing-track == track.uri ? Theme.color.system-blue : Theme.color.separator;
                 }
             }
 
@@ -37,7 +37,7 @@ export component TrackLayout inherits Rectangle {
                 vertical-alignment: center;
                 horizontal-alignment: left;
                 overflow: elide;
-                text: track.name;
+                text: track.title;
             }
         }
 
@@ -48,7 +48,7 @@ export component TrackLayout inherits Rectangle {
                 opacity: 0.75;
                 vertical-alignment: center;
                 horizontal-alignment: left;
-                text: track.duration;
+                text: track.length;
                 font-family: "'SF Mono', SFMono-Regular, ui-monospace, monospace";
             }
         }

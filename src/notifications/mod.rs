@@ -67,7 +67,8 @@ pub fn listen(window_handle_weak: Weak<AppWindow>, controls: &mut MediaControls)
             | NotificationTypes::TrackChanged
             | NotificationTypes::PlayingTracksChanged
             | NotificationTypes::NowPlayingListChanged => {
-                let (_exists, path) = get_cover(&notification.artist, &notification.album).unwrap();
+                let (_exists, path) =
+                    get_cover(&notification.track.artist, &notification.track.album).unwrap();
 
                 let mut cover_path: String = "file://".to_owned();
                 let canonical_path = path.canonicalize().unwrap();
@@ -75,22 +76,22 @@ pub fn listen(window_handle_weak: Weak<AppWindow>, controls: &mut MediaControls)
 
                 controls
                     .set_metadata(MediaMetadata {
-                        title: Some(&notification.track),
-                        artist: Some(&notification.artist),
-                        album: Some(&notification.album),
-                        duration: Some(Duration::from_millis(notification.duration)),
+                        title: Some(&notification.track.title),
+                        artist: Some(&notification.track.artist),
+                        album: Some(&notification.track.album),
+                        duration: Some(Duration::from_millis(notification.track.duration)),
                         cover_url: Some(&cover_path),
                     })
                     .unwrap();
 
                 handle_play_state_change(controls, &notification, || { /* do nothing */ });
 
-                if !notification.source_file.is_empty() {
+                if !notification.track.uri.is_empty() {
                     window_handle_weak
                         .upgrade_in_event_loop(move |window| {
                             window
                                 .global::<Logic>()
-                                .set_now_playing_track(notification.source_file.into())
+                                .set_now_playing_track(notification.track.uri.into())
                         })
                         .unwrap();
                 }
