@@ -187,12 +187,7 @@ pub struct Notification {
     pub position: u64,
     #[serde(rename = "Notification")]
     pub notification_type: NotificationTypes,
-    #[serde(default = "default_notification_position")]
-    pub duration: u64,
-    pub artist: String,
-    pub album: String,
-    pub track: String,
-    pub source_file: String,
+    pub track: Track,
     // pub sound_graph: Vec<f64>,
 }
 
