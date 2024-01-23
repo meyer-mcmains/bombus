@@ -150,31 +150,6 @@ pub fn previous_track() {
     post("previous-track").send().unwrap();
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AltAlbum {
-    pub album_id: String,
-    pub title: String,
-    pub artist: String,
-    pub year: String,
-    #[serde(default = "default_position")]
-    pub position: usize,
-    #[serde(default = "default_position")]
-    pub sorted_position: usize,
-}
-
-pub fn get_library_from_file() -> Vec<AltAlbum> {
-    serde_json::from_reader(&File::open("library.json").unwrap()).unwrap()
-}
-
-pub fn save_library_to_file(library: Vec<AltAlbum>) {
-    serde_json::to_writer_pretty(&File::create("library.json").unwrap(), &library).unwrap();
-}
-
-fn default_position() -> usize {
-    0
-}
-
 pub fn create_socket() -> WebSocket<Stream<TcpStream, TlsStream<TcpStream>>> {
     let (socket, _response) = connect(BASE_SOCKET).expect("Can't connect");
     socket
