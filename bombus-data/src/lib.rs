@@ -61,7 +61,6 @@ pub struct Album {
     pub title: String,
     pub artist: String,
     pub year: String,
-    #[serde(skip_serializing)]
     pub tracks: Vec<Track>,
 }
 
