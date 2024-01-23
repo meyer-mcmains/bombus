@@ -64,16 +64,18 @@ pub struct Album {
     pub tracks: Vec<Track>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Track {
-    pub track_id: String,
+    pub id: String,
+    pub album: String,
     pub artist: String,
-    pub disk: Option<i64>,
+    pub disk: Option<u64>,
     pub length: String,
-    pub name: String,
+    pub duration: u64,
+    pub title: String,
     pub number: i64,
-    pub path: String,
+    pub uri: String,
 }
 
 pub fn get_library() -> Result<Vec<Root>, Error> {
