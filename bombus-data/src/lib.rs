@@ -78,21 +78,28 @@ pub struct Track {
     pub uri: String,
 }
 
+/// Get the library from musicbee
+/// if the request fails load the offline cache
+///
+/// # TODO
+/// - handle response error and no cache
+/// - load offline library first and merge in any changes from musicbee??
 pub fn get_library() -> Result<Vec<Root>, Error> {
-    let response = get("library").send()?;
-    let json = response.json::<Vec<Root>>()?;
-
-    // uncomment below to pull library from file
-    // let json: Vec<Root> =
-    //     serde_json::from_reader(&File::open("offline_library.json").unwrap()).unwrap();
-    let albums = json.iter().fold(vec![], |mut acc, artist| {
-        acc.extend(artist.albums.clone());
-        acc
-    });
-
     let library_path = get_cache_directory().join("library.json");
+    let response = get("library").send()?;
 
-    serde_json::to_writer(&File::create(library_path).unwrap(), &albums).unwrap();
+    let json = if response.status().is_success() {
+        let json = response.json::<Vec<Root>>()?;
+
+        // save library to cache
+        serde_json::to_writer(&File::create(library_path).unwrap(), &json).unwrap();
+
+        json
+    } else {
+        // if we cannot hit the server load the library from cache
+        serde_json::from_reader(&File::open(&library_path).unwrap()).unwrap()
+    };
+
     Ok(json)
 }
 
