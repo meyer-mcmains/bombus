@@ -57,7 +57,7 @@ pub struct Root {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Album {
-    pub album_id: String,
+    pub id: String,
     pub title: String,
     pub artist: String,
     pub year: String,
