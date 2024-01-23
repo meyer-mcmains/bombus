@@ -167,7 +167,7 @@ pub enum NotificationTypes {
     PlayingTracksChanged,
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub enum PlayState {
     Playing,
     Paused,
@@ -178,7 +178,7 @@ fn default_notification_position() -> u64 {
     0
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Notification {
     pub play_state: PlayState,
