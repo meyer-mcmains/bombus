@@ -11,6 +11,7 @@ use std::{
     io::Write,
     net::TcpStream,
     path::PathBuf,
+    time::Duration,
 };
 use tungstenite::{connect, stream::Stream, WebSocket};
 
@@ -86,7 +87,7 @@ pub struct Track {
 /// - load offline library first and merge in any changes from musicbee??
 pub fn get_library() -> Result<Vec<Root>, Error> {
     let library_path = get_cache_directory().join("library.json");
-    let response = get("library").send();
+    let response = get("library").timeout(Duration::from_secs(1)).send();
 
     let json = if response.is_err() {
         // if we cannot hit the server load the library from cache
