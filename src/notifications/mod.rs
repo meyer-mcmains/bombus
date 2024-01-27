@@ -16,7 +16,7 @@ fn handle_play_state_change<F>(
             controls
                 .set_playback(souvlaki::MediaPlayback::Paused {
                     progress: Some(souvlaki::MediaPosition(Duration::from_millis(
-                        notification.position,
+                        notification.position as u64,
                     ))),
                 })
                 .unwrap();
@@ -25,7 +25,7 @@ fn handle_play_state_change<F>(
             controls
                 .set_playback(souvlaki::MediaPlayback::Playing {
                     progress: Some(souvlaki::MediaPosition(Duration::from_millis(
-                        notification.position,
+                        notification.position as u64,
                     ))),
                 })
                 .unwrap();
@@ -79,7 +79,7 @@ pub fn listen(window_handle_weak: Weak<AppWindow>, controls: &mut MediaControls)
                         title: Some(&notification.track.title),
                         artist: Some(&notification.track.artist),
                         album: Some(&notification.track.album),
-                        duration: Some(Duration::from_millis(notification.track.duration)),
+                        duration: Some(Duration::from_millis(notification.track.duration as u64)),
                         cover_url: Some(&cover_path),
                     })
                     .unwrap();
