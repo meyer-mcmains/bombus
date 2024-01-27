@@ -174,7 +174,7 @@ pub enum PlayState {
     Stopped,
 }
 
-fn default_notification_position() -> u64 {
+fn default_notification_position() -> i64 {
     0
 }
 
@@ -183,7 +183,7 @@ fn default_notification_position() -> u64 {
 pub struct Notification {
     pub play_state: PlayState,
     #[serde(default = "default_notification_position")]
-    pub position: u64,
+    pub position: i64,
     #[serde(rename = "Notification")]
     pub notification_type: NotificationTypes,
     pub track: Track,
