@@ -103,14 +103,6 @@ pub fn get_library() -> Result<Vec<Root>, Error> {
     Ok(json)
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Cover {
-    pub data: String,
-    pub is_dark: bool,
-    pub color: String,
-}
-
 pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
     let safe_album = album.replace("/", "_");
     let safe_artist = artist.replace("/", "_");
