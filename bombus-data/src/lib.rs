@@ -86,18 +86,18 @@ pub struct Track {
 /// - load offline library first and merge in any changes from musicbee??
 pub fn get_library() -> Result<Vec<Root>, Error> {
     let library_path = get_cache_directory().join("library.json");
-    let response = get("library").send()?;
+    let response = get("library").send();
 
-    let json = if response.status().is_success() {
-        let json = response.json::<Vec<Root>>()?;
+    let json = if response.is_err() {
+        // if we cannot hit the server load the library from cache
+        serde_json::from_reader(&File::open(&library_path).unwrap()).unwrap()
+    } else {
+        let json = response?.json::<Vec<Root>>()?;
 
         // save library to cache
         serde_json::to_writer(&File::create(library_path).unwrap(), &json).unwrap();
 
         json
-    } else {
-        // if we cannot hit the server load the library from cache
-        serde_json::from_reader(&File::open(&library_path).unwrap()).unwrap()
     };
 
     Ok(json)
