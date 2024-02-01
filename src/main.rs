@@ -1,5 +1,4 @@
 use std::{
-    net::Ipv4Addr,
     rc::Rc,
     sync::{Arc, Mutex},
     thread,
@@ -151,7 +150,7 @@ fn main() -> Result<(), slint::PlatformError> {
     window
         .global::<Logic>()
         .on_add_library(move |name, ip, color| {
-            bombus_data::persist::add_library(name.to_string(), ip.as_str(), color.to_string());
+            persist::add_library(name.to_string(), ip.as_str(), color.to_string());
         });
 
     let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();
