@@ -11,7 +11,7 @@ use slint::{Color, ComponentHandle, Model, ModelExt, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
 use utils::album_cover;
-use utils::slint_modules::{Album, AppWindow, Logic, Theme, Track};
+use utils::slint_modules::{Album, AppWindow, Library, Logic, Theme, Track};
 use utils::theme;
 
 mod notifications;
@@ -28,6 +28,21 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let color = theme::get();
     window.global::<Theme>().set_color(color);
+
+    // load libraries
+    let libraries = persist::get_libraries();
+    let libraries_model: Rc<VecModel<Library>> = Rc::new(VecModel::from(vec![]));
+
+    libraries.into_iter().for_each(|library| {
+        let library = Library {
+            name: library.name.into(),
+            ip: library.ip.to_string().into(),
+            color: Color::from_argb_encoded(library.color),
+        };
+        libraries_model.push(library);
+    });
+
+    window.set_libraries(libraries_model.into());
 
     // load the library
     let library = get_library().unwrap();
