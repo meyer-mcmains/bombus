@@ -25,7 +25,7 @@ pub struct Library {
 type Libraries = Vec<Library>;
 
 /// return the library list file - create it if it does not already exist
-pub fn get_libraries() -> PathBuf {
+pub fn get_libraries_path() -> PathBuf {
     let library_list = get_cache_directory().join("libraries.json");
 
     if !library_list.exists() {
@@ -43,7 +43,7 @@ pub fn add_library(name: String, ip: &str, color: String) {
         color,
     };
 
-    let library_list_path = get_libraries();
+    let library_list_path = get_libraries_path();
     let mut library_list: Libraries =
         serde_json::from_reader(&File::open(&library_list_path).unwrap()).unwrap();
 
