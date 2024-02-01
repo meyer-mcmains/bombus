@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use bombus_data::get_artwork_cache_directory;
+use bombus_data::persist;
 use slint::{Image, SharedPixelBuffer};
 
 const PLACEHOLDER_IMAGE: &[u8; 32346] = include_bytes!("../assets/cover.jpg");
@@ -19,7 +19,7 @@ pub fn load(artist: &str, album: &str) -> Image {
         source_image.height(),
     ));
 
-    let artwork_cache = get_artwork_cache_directory();
+    let artwork_cache = persist::get_artwork_cache_directory();
 
     Image::load_from_path(
         &artwork_cache

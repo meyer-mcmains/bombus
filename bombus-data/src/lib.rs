@@ -1,10 +1,3 @@
-use directories::ProjectDirs;
-use native_tls::TlsStream;
-use reqwest::{
-    blocking::{Client, RequestBuilder},
-    Error,
-};
-use serde::{Deserialize, Serialize};
 use std::{
     ffi::OsStr,
     fs::{self, File},
@@ -13,7 +6,15 @@ use std::{
     path::PathBuf,
     time::Duration,
 };
+
+use native_tls::TlsStream;
+use reqwest::{
+    blocking::{Client, RequestBuilder},
+    Error,
+};
+use serde::{Deserialize, Serialize};
 use tungstenite::{connect, stream::Stream, WebSocket};
+pub mod persist;
 
 //https://transform.tools/json-to-rust-serde
 
@@ -34,18 +35,6 @@ fn get(path: &str) -> RequestBuilder {
 /// make a POST request to the BASE_URL at a specific path
 fn post(path: &str) -> RequestBuilder {
     create_client().post(format!("{BASE_URL}/api/{path}"))
-}
-
-/// get the project cache directory
-fn get_cache_directory() -> PathBuf {
-    let project_dirs = ProjectDirs::from("app", "meyer-mcmains", "bombus").unwrap();
-    PathBuf::from(project_dirs.cache_dir())
-}
-
-/// return the location of the artwork cache
-pub fn get_artwork_cache_directory() -> PathBuf {
-    let artwork_cache = get_cache_directory().join("artwork");
-    artwork_cache
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -86,7 +75,7 @@ pub struct Track {
 /// - handle response error and no cache
 /// - load offline library first and merge in any changes from musicbee??
 pub fn get_library() -> Result<Vec<Root>, Error> {
-    let library_path = get_cache_directory().join("library.json");
+    let library_path = persist::get_cache_directory().join("library.json");
     let response = get("library").timeout(Duration::from_secs(1)).send();
 
     let json = if response.is_err() {
@@ -110,7 +99,7 @@ pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
     let os_artist = OsStr::new(&safe_artist);
     let os_album = OsStr::new(&safe_album);
 
-    let artwork_cache = get_artwork_cache_directory();
+    let artwork_cache = persist::get_artwork_cache_directory();
 
     // create path to file
     let file = artwork_cache
