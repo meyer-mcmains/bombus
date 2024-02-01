@@ -162,10 +162,17 @@ fn main() -> Result<(), slint::PlatformError> {
         });
 
     // on library added
+    let window_handle_weak = window.as_weak();
     window
         .global::<Logic>()
         .on_add_library(move |name, ip, color| {
             persist::add_library(name.to_string(), ip.as_str(), color.as_argb_encoded());
+            let binding = window_handle_weak.upgrade().unwrap().get_libraries();
+            let ui_libraries = binding
+                .as_any()
+                .downcast_ref::<VecModel<Library>>()
+                .unwrap();
+            ui_libraries.push(Library { name, ip, color })
         });
 
     let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();
