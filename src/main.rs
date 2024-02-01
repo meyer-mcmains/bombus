@@ -1,10 +1,13 @@
 use std::{
+    net::Ipv4Addr,
     rc::Rc,
     sync::{Arc, Mutex},
     thread,
 };
 
-use bombus_data::{get_cover, get_library, next_track, play_album, play_pause, previous_track};
+use bombus_data::{
+    get_cover, get_library, next_track, persist, play_album, play_pause, previous_track,
+};
 use slint::{ComponentHandle, Model, ModelExt, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
@@ -50,7 +53,7 @@ fn main() -> Result<(), slint::PlatformError> {
                             .map(|track| Track {
                                 length: track.length.into(),
                                 title: track.title.into(),
-                                number: track.number as i32,
+                                number: track.number,
                                 uri: track.uri.into(),
                             })
                             .collect();
@@ -142,6 +145,13 @@ fn main() -> Result<(), slint::PlatformError> {
         .global::<Logic>()
         .on_track_clicked(move |track: Track| {
             println!("{}", track.title);
+        });
+
+    // on library added
+    window
+        .global::<Logic>()
+        .on_add_library(move |name, ip, color| {
+            bombus_data::persist::add_library(name.to_string(), ip.as_str(), color.to_string());
         });
 
     let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();
