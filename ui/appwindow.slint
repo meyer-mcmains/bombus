@@ -3,16 +3,21 @@ import { Grid, Logic, Const, Album, Theme, Color } from "global.slint";
 import { Cover } from "cover.slint";
 import { AlbumLayout } from "albumlayout.slint";
 import { Title3, BodySmall} from "typography.slint";
+import { Launch } from "launch.slint";
 
 export { Logic, Theme, Color }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;
+    in property <bool> frame: true;
     in property <int> selected-index: Const.i32-max;
     title: "Bombus";
     background: Theme.color.window-background.darker(1.0);
-    min-width: Grid.outer-width;
-    min-height: Grid.outer-height;
+    min-width: 400px;
+    min-height: 448px;
+    no-frame: frame;
+
+    launch := Launch { }
 
     scroll-view := ScrollView {
         property <int> items_per_row: Math.floor(parent.width / Grid.outer-width);
@@ -20,6 +25,8 @@ export component AppWindow inherits Window {
         // caculate the remaining width so we can manually center the items
         property <length> offset-x: (parent.width - (Grid.outer-width * items-per-row)) / 2;
         property <length> selected-y: Math.floor(selected-index / items-per-row) * Grid.outer-height;
+
+        visible: false;
         height: parent.height;
         width: parent.width;
         viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : album-layout.min-height + 24px);

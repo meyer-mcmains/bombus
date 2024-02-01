@@ -1,0 +1,174 @@
+import { LargeTitle, Headline , Title3} from "typography.slint";
+import { Button, LineEdit } from "std-widgets.slint";
+import { Theme, Logic } from "./global.slint";
+
+export component Launch inherits Rectangle {
+    VerticalLayout {
+        padding: 48px;
+        alignment: space-between;
+
+        LargeTitle {
+            horizontal-alignment: center;
+            text: "Bombus";
+            color: Theme.color.system-white;
+        }
+
+        Title3 {
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            text: "Get started by adding a library!";
+            color: Theme.color.label-secondary;
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            Button {
+                width: self.min-width;
+                text: "+ Add a Library";
+
+                clicked => {
+                    popup.show();
+                }
+            }
+        }
+
+        popup := PopupWindow {
+            property <length> inset: 48px;
+            property <length> sheet-inset: inset * 2;
+            property <length> panel-inset: sheet-inset - 16px;
+            property <color> current-color;
+            close-on-click: false;
+            height: root.height;
+            width: root.height;
+
+            init => {
+                overlay.opacity = 0.5;
+                sheet.opacity = 1;
+            }
+
+            overlay := Rectangle {
+                x: root.x;
+                y: root.y;
+                height: root.height;
+                width: root.width;
+                background: black;
+                opacity: 0;
+
+                animate opacity {
+                    duration: 250ms;
+                }
+            }
+
+            sheet := Rectangle {
+                x: root.x + sheet-inset / 2;
+                y: root.y + sheet-inset / 2;
+                height: popup.height - sheet-inset;
+                width: root.width - sheet-inset;
+                background: Theme.color.window-background;
+                opacity: 0;
+
+                animate opacity {
+                    duration: 250ms;
+                }
+            }
+
+            VerticalLayout {
+                alignment: space-between;
+                padding: panel-inset;
+                spacing: 16px;
+
+                VerticalLayout {
+                    spacing: 16px;
+
+                    HorizontalLayout {
+                        spacing: 8px;
+
+                        Rectangle {
+                            height: 24px;
+                            width: self.height;
+                            border-radius: self.height;
+                            background: current-color;
+
+                            animate background {
+                                duration: 250ms;
+                            }
+                        }
+
+                        LargeTitle {
+                            height: 28px;
+                            text: title.text;
+                            color: Theme.color.label;
+                            overflow: elide;
+                            vertical-alignment: bottom;
+                        }
+                    }
+
+                    title := LineEdit {
+                        height: 32px;
+                        width: root.width - (panel-inset * 2);
+                        font-size: 16px;
+                        placeholder-text: "Title";
+                    }
+
+                    ip := LineEdit {
+                        height: 32px;
+                        width: root.width - (panel-inset * 2);
+                        font-size: 16px;
+                        placeholder-text: "IP Address";
+                    }
+
+                    HorizontalLayout {
+                        property <[color]> colors: [Theme.color.system-red, Theme.color.system-orange, Theme.color.system-yellow, Theme.color.system-green, Theme.color.system-blue, Theme.color.system-purple, Theme.color.system-gray];
+                        property <length> size: 16px;
+                        property <length> hover-size: 20px;
+                        for color [index] in colors: Rectangle {
+                            height: 20px;
+                            width: 24px;
+
+                            Rectangle {
+                                height: touch.has-hover ? hover-size : size;
+                                width: touch.has-hover ? hover-size : size;
+                                border-radius: self.height;
+                                background: color;
+
+                                animate height, width {
+                                    easing: ease-in-bounce;
+                                    duration: 100ms;
+                                }
+
+                                touch := TouchArea {
+                                    mouse-cursor: pointer;
+                                    clicked => {
+                                        current-color = color;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 16px;
+                    Button {
+                        height: self.min-height;
+                        text: "Close";
+                        clicked => {
+                            sheet.opacity = 0;
+                            popup.close();
+                        }
+                    }
+
+                    Button {
+                        height: self.min-height;
+                        text: "Add";
+                        clicked => {
+                            sheet.opacity = 0;
+                            Logic.add-library(title.text, ip.text, current-color);
+                            popup.close();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
