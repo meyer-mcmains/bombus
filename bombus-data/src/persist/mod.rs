@@ -51,3 +51,9 @@ pub fn add_library(name: String, ip: &str, color: u32) {
     library_list.push(library);
     serde_json::to_writer(&File::create(&library_list_path).unwrap(), &library_list).unwrap();
 }
+
+/// get the list of libraries
+pub fn get_libraries() -> Libraries {
+    let libraries_path = get_libraries_path();
+    serde_json::from_reader(&File::open(&libraries_path).unwrap()).unwrap()
+}
