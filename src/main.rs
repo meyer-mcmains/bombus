@@ -7,7 +7,7 @@ use std::{
 use bombus_data::{
     get_cover, get_library, next_track, persist, play_album, play_pause, previous_track,
 };
-use slint::{ComponentHandle, Model, ModelExt, ModelRc, VecModel};
+use slint::{Color, ComponentHandle, Model, ModelExt, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
 use utils::album_cover;
@@ -150,7 +150,7 @@ fn main() -> Result<(), slint::PlatformError> {
     window
         .global::<Logic>()
         .on_add_library(move |name, ip, color| {
-            persist::add_library(name.to_string(), ip.as_str(), color.to_string());
+            persist::add_library(name.to_string(), ip.as_str(), color.as_argb_encoded());
         });
 
     let mut controls = MediaControls::new(PLATFORM_CONFIG).unwrap();

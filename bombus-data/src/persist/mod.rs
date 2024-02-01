@@ -19,7 +19,7 @@ pub fn get_artwork_cache_directory() -> PathBuf {
 pub struct Library {
     pub name: String,
     pub ip: Ipv4Addr,
-    pub color: String,
+    pub color: u32,
 }
 
 type Libraries = Vec<Library>;
@@ -36,7 +36,8 @@ pub fn get_libraries_path() -> PathBuf {
     library_list
 }
 
-pub fn add_library(name: String, ip: &str, color: String) {
+/// add a new library
+pub fn add_library(name: String, ip: &str, color: u32) {
     let library = Library {
         name,
         ip: Ipv4Addr::from_str(&ip).unwrap(),
