@@ -1,8 +1,11 @@
 import { LargeTitle, Headline , Title3} from "typography.slint";
-import { Button, LineEdit } from "std-widgets.slint";
-import { Theme, Logic } from "./global.slint";
+import { Button, LineEdit, ListView } from "std-widgets.slint";
+import { Theme, Logic, Library } from "./global.slint";
+import { LibraryItem } from "library_item.slint";
 
 export component Launch inherits Rectangle {
+    in property <[Library]> libraries;
+
     VerticalLayout {
         padding: 48px;
         alignment: space-between;
@@ -13,11 +16,18 @@ export component Launch inherits Rectangle {
             color: Theme.color.system-white;
         }
 
-        Title3 {
+        if libraries.length == 0 : Title3 {
             horizontal-alignment: center;
             vertical-alignment: center;
             text: "Get started by adding a library!";
             color: Theme.color.label-secondary;
+        }
+
+        if libraries.length > 0 : ListView {
+            height: 200px;
+            for library in libraries : LibraryItem {
+                library: library;
+            }
         }
 
         HorizontalLayout {

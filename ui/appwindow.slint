@@ -18,7 +18,9 @@ export component AppWindow inherits Window {
     min-height: 448px;
     no-frame: frame;
 
-    launch := Launch { }
+    launch := Launch {
+        libraries: libraries;
+    }
 
     scroll-view := ScrollView {
         property <int> items_per_row: Math.floor(parent.width / Grid.outer-width);
