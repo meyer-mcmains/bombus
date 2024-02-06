@@ -9,16 +9,16 @@ export { Logic, Theme, Color }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;
-    in property <bool> frame: true;
+    in property <bool> has-frame: false;
     in property <int> selected-index: Const.i32-max;
     in property <[Library]> libraries;
     title: "Bombus";
     background: Theme.color.window-background.darker(1.0);
     min-width: 400px;
     min-height: 448px;
-    no-frame: frame;
+    no-frame: !has-frame;
 
-    launch := Launch {
+    if albums.length == 0 : Launch {
         libraries: libraries;
     }
 
@@ -29,7 +29,7 @@ export component AppWindow inherits Window {
         property <length> offset-x: (parent.width - (Grid.outer-width * items-per-row)) / 2;
         property <length> selected-y: Math.floor(selected-index / items-per-row) * Grid.outer-height;
 
-        visible: false;
+        visible: albums.length > 0;
         height: parent.height;
         width: parent.width;
         viewport-height: Grid.outer-height * rows + (selected-index == Const.i32-max ? 0 : album-layout.min-height + 24px);

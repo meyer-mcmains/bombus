@@ -4,6 +4,7 @@ use std::{
     io::Write,
     net::TcpStream,
     path::PathBuf,
+    sync::Mutex,
     time::Duration,
 };
 
@@ -16,10 +17,18 @@ use serde::{Deserialize, Serialize};
 use tungstenite::{connect, stream::Stream, WebSocket};
 pub mod persist;
 
-//https://transform.tools/json-to-rust-serde
+pub type TWebSocket = WebSocket<Stream<TcpStream, TlsStream<TcpStream>>>;
 
-const BASE_URL: &str = "http://192.168.86.57:1200";
-const BASE_SOCKET: &str = "ws://192.168.86.57:1200/notification";
+static BASE_URL: Mutex<String> = Mutex::new(String::new());
+static BASE_SOCKET: Mutex<String> = Mutex::new(String::new());
+
+/// set the library connection
+/// # TODO
+/// - allow the user to use a different port (backend needs to support this first)
+pub fn set_connection(ip: String) {
+    *BASE_URL.lock().unwrap() = format!("http://{}:1200", ip);
+    *BASE_SOCKET.lock().unwrap() = format!("ws://{}:1200/notification", ip);
+}
 
 /// create and return a http client
 fn create_client() -> Client {
@@ -29,14 +38,17 @@ fn create_client() -> Client {
 
 /// make a GET request to the BASE_URL at a specific path``
 fn get(path: &str) -> RequestBuilder {
-    create_client().get(format!("{BASE_URL}/api/{path}"))
+    let base = BASE_URL.lock().unwrap();
+    create_client().get(format!("{base}/api/{path}"))
 }
 
 /// make a POST request to the BASE_URL at a specific path
 fn post(path: &str) -> RequestBuilder {
-    create_client().post(format!("{BASE_URL}/api/{path}"))
+    let base = BASE_URL.lock().unwrap();
+    create_client().post(format!("{base}/api/{path}"))
 }
 
+// https://transform.tools/json-to-rust-serde
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Root {
@@ -139,9 +151,16 @@ pub fn previous_track() {
     post("previous-track").send().unwrap();
 }
 
-pub fn create_socket() -> WebSocket<Stream<TcpStream, TlsStream<TcpStream>>> {
-    let (socket, _response) = connect(BASE_SOCKET).expect("Can't connect");
-    socket
+pub fn create_socket() -> Option<WebSocket<Stream<TcpStream, TlsStream<TcpStream>>>> {
+    let base = BASE_SOCKET.lock().unwrap();
+
+    if base.is_empty() {
+        None
+    } else {
+        let (socket, _response) =
+            connect(format!("ws://localhost:1200/notifications")).expect("Can't connect");
+        Some(socket)
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]

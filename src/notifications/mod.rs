@@ -2,7 +2,14 @@ use crate::utils::slint_modules::{AppWindow, Logic};
 use bombus_data::*;
 use slint::{ComponentHandle, SharedString, Weak};
 use souvlaki::{MediaControls, MediaMetadata};
-use std::time::Duration;
+use std::{
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
+    thread,
+    time::Duration,
+};
 
 fn handle_play_state_change<F>(
     controls: &mut MediaControls,
@@ -41,10 +48,26 @@ fn handle_play_state_change<F>(
 }
 
 /// using a socket listen for notification from musicbee
-pub fn listen(window_handle_weak: Weak<AppWindow>, controls: &mut MediaControls) {
-    let mut socket = create_socket();
+pub fn listen(
+    library_selected: Arc<AtomicBool>,
+    window_handle_weak: Weak<AppWindow>,
+    controls: &mut MediaControls,
+) {
+    let mut socket: Option<TWebSocket> = None;
 
-    loop {
+    // wait for a library to be selected
+    while !library_selected.load(Ordering::Acquire) {
+        // park the thread until a library is selected
+        thread::park();
+        let maybe_socket = create_socket();
+
+        if let Some(value) = maybe_socket {
+            socket = Some(value);
+            break;
+        }
+    }
+
+    while let Some(ref mut socket) = socket {
         let message = socket.read_message().expect("Error reading message");
         let notification = notification_to_json(message.into_text().unwrap());
 
