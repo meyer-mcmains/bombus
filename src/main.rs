@@ -135,5 +135,18 @@ fn main() -> Result<(), slint::PlatformError> {
         upgraded_window.set_has_frame(true);
     });
 
+    // on library removed
+    let window_handle_weak = window.as_weak();
+    window.global::<Logic>().on_remove_library(move |library| {
+        let remove_index = persist::remove_library(library.name.to_string());
+
+        let binding = window_handle_weak.upgrade().unwrap().get_libraries();
+        let ui_libraries = binding
+            .as_any()
+            .downcast_ref::<VecModel<Library>>()
+            .unwrap();
+        ui_libraries.remove(remove_index);
+    });
+
     window.run()
 }

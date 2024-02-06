@@ -2,43 +2,90 @@ import { Library, Theme, Logic } from "global.slint";
 import { BodySmall, Title3, Headline } from "typography.slint";
 import { TrackLayout } from "tracklayout.slint";
 
-export component LibraryItem inherits Rectangle {
+export component LibraryItem inherits HorizontalLayout {
     in property <Library> library;
-    background: touch.has-hover ? Theme.color.system-fill-secondary : transparent;
+    property <bool> hovered: touch.has-hover || close.has-hover;
+    alignment: stretch;
 
-    HorizontalLayout {
-        padding: 8px;
-        spacing: 8px;
+    Rectangle {
+        background: hovered ? Theme.color.system-fill-secondary : transparent;
 
-        VerticalLayout {
-            alignment: center;
-            padding-left: 8px;
-            padding-right: 4px;
+        HorizontalLayout {
+            spacing: 8px;
+            padding: 8px;
+            alignment: start;
+            horizontal-stretch: 1;
 
-            Rectangle {
-                height: 16px;
-                width: self.height;
-                border-radius: self.height;
-                background: library.color;
+            // color
+            VerticalLayout {
+                alignment: center;
+                padding-left: 8px;
+                padding-right: 4px;
+
+                Rectangle {
+                    height: 16px;
+                    width: self.height;
+                    border-radius: self.height;
+                    background: library.color;
+                }
+            }
+
+            // name
+            VerticalLayout {
+                spacing: 4px;
+                BodySmall {
+                    text: library.ip;
+                }
+
+                Title3 {
+                    text: library.name;
+                }
             }
         }
 
-        VerticalLayout {
-            spacing: 4px;
-            BodySmall {
-                text: library.ip;
-            }
-
-            Title3 {
-                text: library.name;
+        touch := TouchArea {
+            mouse-cursor: pointer;
+            clicked => {
+                Logic.load-library(library);
             }
         }
     }
 
-    touch := TouchArea {
-        mouse-cursor: pointer;
-        clicked => {
-            Logic.load-library(library);
+    Rectangle {
+        background: hovered ? Theme.color.system-fill-secondary : transparent;
+
+        HorizontalLayout {
+            alignment: center;
+            padding-right: 24px;
+            opacity: hovered ? 1 : 0;
+            animate opacity {
+                easing: ease-in;
+                delay: 250ms;
+                duration: 250ms;
+            }
+
+            VerticalLayout {
+                alignment: center;
+
+                Image {
+                    height: 24px;
+                    width: self.height;
+                    source: @image-url("../src/assets/x-circle.svg");
+                    colorize: close.has-hover ? Theme.color.system-red : Theme.color.label-secondary;
+                    animate colorize {
+                        easing: ease-in;
+                        delay: 250ms;
+                        duration: 250ms;
+                    }
+                }
+            }
+        }
+
+        close := TouchArea {
+            mouse-cursor: pointer;
+            clicked => {
+                Logic.remove-library(library);
+            }
         }
     }
 }
