@@ -78,19 +78,18 @@ pub fn get_library() -> Result<Vec<Root>, Error> {
     let library_path = persist::get_cache_directory().join("library.json");
     let response = get("library").timeout(Duration::from_secs(1)).send();
 
-    let json = if response.is_err() {
-        // if we cannot hit the server load the library from cache
-        serde_json::from_reader(&File::open(&library_path).unwrap()).unwrap()
-    } else {
-        let json = response?.json::<Vec<Root>>()?;
+    match response {
+        Ok(_) => {
+            let json = response?.json::<Vec<Root>>()?;
+            // save library to cache
+            serde_json::to_writer(&File::create(library_path).unwrap(), &json).unwrap();
+            return Ok(json);
+        }
 
-        // save library to cache
-        serde_json::to_writer(&File::create(library_path).unwrap(), &json).unwrap();
-
-        json
-    };
-
-    Ok(json)
+        Err(_) => {
+            return Ok(serde_json::from_reader(&File::open(&library_path).unwrap()).unwrap());
+        }
+    }
 }
 
 pub fn get_cover(artist: &str, album: &str) -> Result<(bool, PathBuf), Error> {
