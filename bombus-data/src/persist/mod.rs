@@ -52,6 +52,25 @@ pub fn add_library(name: String, ip: &str, color: u32) {
     serde_json::to_writer(&File::create(&library_list_path).unwrap(), &library_list).unwrap();
 }
 
+/// remove a library
+pub fn remove_library(name: String) -> usize {
+    let library_list_path = get_libraries_path();
+    let mut library_list: Libraries =
+        serde_json::from_reader(&File::open(&library_list_path).unwrap()).unwrap();
+
+    let remove_index = library_list.iter().position(|library| library.name == name);
+
+    match remove_index {
+        Some(value) => {
+            library_list.remove(value);
+            serde_json::to_writer(&File::create(&library_list_path).unwrap(), &library_list)
+                .unwrap();
+            value
+        }
+        None => todo!(),
+    }
+}
+
 /// get the list of libraries
 pub fn get_libraries() -> Libraries {
     let libraries_path = get_libraries_path();
