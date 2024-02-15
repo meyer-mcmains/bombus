@@ -157,8 +157,7 @@ pub fn create_socket() -> Option<WebSocket<Stream<TcpStream, TlsStream<TcpStream
     if base.is_empty() {
         None
     } else {
-        let (socket, _response) =
-            connect(format!("ws://localhost:1200/notifications")).expect("Can't connect");
+        let (socket, _response) = connect(base.to_string()).expect("Can't connect");
         Some(socket)
     }
 }
