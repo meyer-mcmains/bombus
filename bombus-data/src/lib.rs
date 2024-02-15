@@ -88,7 +88,7 @@ pub struct Track {
 /// - load offline library first and merge in any changes from musicbee??
 pub fn get_library() -> Result<Vec<Root>, Error> {
     let library_path = persist::get_cache_directory().join("library.json");
-    let response = get("library").timeout(Duration::from_secs(5)).send();
+    let response = get("library").timeout(Duration::from_secs(10)).send();
 
     match response {
         Ok(_) => {
