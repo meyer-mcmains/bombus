@@ -50,6 +50,27 @@ export component AlbumLayout inherits VerticalLayout {
                             easing: ease-in-out;
                         }
 
+                        VerticalLayout {
+                            alignment: center;
+
+                            HorizontalLayout {
+                                alignment: center;
+
+                                Image {
+                                    height: 24px;
+                                    width: self.height;
+                                    // TODO replace icon
+                                    source: @image-url("../src/assets/x.svg");
+                                    colorize: play-pause.has-hover ? Theme.color.system-blue : Theme.color.label-secondary;
+                                    animate colorize {
+                                        easing: ease-in;
+                                        delay: 250ms;
+                                        duration: 250ms;
+                                    }
+                                }
+                            }
+                        }
+
                         play-pause := TouchArea {
                             mouse-cursor: pointer;
                         }
