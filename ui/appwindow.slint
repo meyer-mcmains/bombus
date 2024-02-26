@@ -13,7 +13,7 @@ export component AppWindow inherits Window {
     in property <int> selected-index: Const.i32-max;
     in property <[Library]> libraries;
     title: "Bombus";
-    background: Theme.color.window-background.darker(1.0);
+    background: albums.length > 0 ? Theme.color.window-background.darker(1.0) : transparent;
     min-width: 400px;
     min-height: 448px;
     no-frame: !has-frame;
@@ -55,7 +55,11 @@ export component AppWindow inherits Window {
             padding-left: Grid.spacing;
             padding-right: Grid.spacing;
             alignment: center;
-            spacing: 8px;
+            spacing: touch.has-hover ? 12px : 8px;
+            animate spacing {
+                duration: 250ms;
+                easing: ease-in-out;
+            }
 
             touch := TouchArea {
                 mouse-cursor: pointer;

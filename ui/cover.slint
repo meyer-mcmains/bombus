@@ -1,28 +1,44 @@
-import { Grid, Logic, Album } from "global.slint";
+import { Grid, Logic, Album, Theme } from "global.slint";
 
-export component Cover inherits Image {
+export component Cover inherits Rectangle {
     in property <Album> album;
     in property <int> index;
     in property <bool> touch-pressed;
     in property <bool> touch-has-hover;
-    source: album.image;
+    property <length> radius: 6px;
     height: Grid.inner-size;
     width: Grid.inner-size;
 
-    states [
-        enabled when !touch-pressed && touch-has-hover: {
-            height: Grid.inner-size + 4px;
-            width: Grid.inner-size + 4px;
-        }
+    Rectangle {
+        height: Grid.inner-size + 8px;
+        width: Grid.inner-size + 8px;
+        background: Theme.color.system-blue;
+        border-radius: radius;
+        opacity: touch-has-hover ? 1 : 0;
 
-        enabled when touch-pressed: {
-            root.height: Grid.inner-size - 16px;
-            root.width: Grid.inner-size - 16px;
+        animate opacity {
+             duration: 250ms;
+             easing: ease-in-out;
         }
-    ]
+    }
 
-    animate width, height{
-        duration: 200ms;
-        easing: ease-in-out-circ;
+    Rectangle {
+        height: Grid.inner-size + 4px;
+        width: Grid.inner-size + 4px;
+        background: Theme.color.window-background.darker(1.0);
+        border-radius: radius;
+    }
+
+    Rectangle {
+        clip: true;
+        border-radius: radius;
+        height: Grid.inner-size - 4px;
+        width: Grid.inner-size - 4px;
+
+        img := Image {
+            height: Grid.inner-size - 4px;
+            width: Grid.inner-size - 4px;
+            source: album.image;
+        }
     }
 }

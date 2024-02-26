@@ -5,6 +5,8 @@ import { LibraryItem } from "library_item.slint";
 
 export component Launch inherits Rectangle {
     in property <[Library]> libraries;
+    border-radius: 16px;
+    background: Theme.color.window-background.darker(1.0);
 
     VerticalLayout {
         padding: 48px;

@@ -14,27 +14,11 @@ export component AlbumLayout inherits VerticalLayout {
         x: mod(selected-index, items-per-row) * Grid.outer-width;
         height: 24px;
         width: Grid.inner-size;
+
         // Make a triangle
         Path {
-            width: 100%;
-            height: 24px;
             fill: Theme.color.system-fill-tertiary;
-            MoveTo {
-                x: 0;
-                y: 24;
-            }
-
-            LineTo {
-                x: 16;
-                y: 0;
-            }
-
-            LineTo {
-                x: 32;
-                y: 24;
-            }
-
-            Close { }
+            commands: "M40 28.99H0c3.32 0 4-2 4-2L16.4 2.2c1.35-2.95 5.84-2.93 7.21 0L36 26.99s.69 2 4 2Z";
         }
 
         animate x {
@@ -46,6 +30,8 @@ export component AlbumLayout inherits VerticalLayout {
     HorizontalLayout {
         Rectangle {
             background: Theme.color.system-fill-tertiary;
+            border-radius: 16px;
+
             VerticalLayout {
                 alignment: start;
                 padding: 24px;

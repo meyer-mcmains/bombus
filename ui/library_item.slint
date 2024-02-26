@@ -2,89 +2,89 @@ import { Library, Theme, Logic } from "global.slint";
 import { BodySmall, Title3, Headline } from "typography.slint";
 import { TrackLayout } from "tracklayout.slint";
 
-export component LibraryItem inherits HorizontalLayout {
+export component LibraryItem inherits Rectangle {
     in property <Library> library;
     property <bool> hovered: touch.has-hover || close.has-hover;
-    alignment: stretch;
+    background: hovered ? Theme.color.system-fill-secondary : transparent;
+    border-radius: 16px;
 
-    Rectangle {
-        background: hovered ? Theme.color.system-fill-secondary : transparent;
+    HorizontalLayout {
+        alignment: stretch;
+        Rectangle {
+            HorizontalLayout {
+                spacing: 8px;
+                padding: 8px;
+                alignment: start;
+                horizontal-stretch: 1;
 
-        HorizontalLayout {
-            spacing: 8px;
-            padding: 8px;
-            alignment: start;
-            horizontal-stretch: 1;
+                // color
+                VerticalLayout {
+                    alignment: center;
+                    padding-left: 8px;
+                    padding-right: 4px;
 
-            // color
-            VerticalLayout {
-                alignment: center;
-                padding-left: 8px;
-                padding-right: 4px;
-
-                Rectangle {
-                    height: 16px;
-                    width: self.height;
-                    border-radius: self.height;
-                    background: library.color;
-                }
-            }
-
-            // name
-            VerticalLayout {
-                spacing: 4px;
-                BodySmall {
-                    text: library.ip;
+                    Rectangle {
+                        height: 16px;
+                        width: self.height;
+                        border-radius: self.height;
+                        background: library.color;
+                    }
                 }
 
-                Title3 {
-                    text: library.name;
-                }
-            }
-        }
+                // name
+                VerticalLayout {
+                    spacing: 4px;
+                    BodySmall {
+                        text: library.ip;
+                    }
 
-        touch := TouchArea {
-            mouse-cursor: pointer;
-            clicked => {
-                Logic.load-library(library);
-            }
-        }
-    }
-
-    Rectangle {
-        background: hovered ? Theme.color.system-fill-secondary : transparent;
-
-        HorizontalLayout {
-            alignment: center;
-            padding-right: 24px;
-            opacity: hovered ? 1 : 0;
-            animate opacity {
-                easing: ease-in;
-                delay: 250ms;
-                duration: 250ms;
-            }
-
-            VerticalLayout {
-                alignment: center;
-
-                Image {
-                    height: 24px;
-                    width: self.height;
-                    source: @image-url("../src/assets/x-circle.svg");
-                    colorize: close.has-hover ? Theme.color.system-red : Theme.color.label-secondary;
-                    animate colorize {
-                        easing: ease-in;
-                        delay: 250ms;
-                        duration: 250ms;
+                    Title3 {
+                        text: library.name;
                     }
                 }
             }
+
+            touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    Logic.load-library(library);
+                }
+            }
         }
 
-        close := TouchArea {
-            mouse-cursor: pointer;
-            clicked => {
-                Logic.remove-library(library);
+        Rectangle {
+            HorizontalLayout {
+                alignment: center;
+                padding-right: 24px;
+                opacity: hovered ? 1 : 0;
+                animate opacity {
+                    easing: ease-in;
+                    delay: 250ms;
+                    duration: 250ms;
+                }
+
+                VerticalLayout {
+                    alignment: center;
+
+                    Image {
+                        height: 24px;
+                        width: self.height;
+                        source: @image-url("../src/assets/x-circle.svg");
+                        colorize: close.has-hover ? Theme.color.system-red : Theme.color.label-secondary;
+                        animate colorize {
+                            easing: ease-in;
+                            delay: 250ms;
+                            duration: 250ms;
+                        }
+                    }
+                }
+            }
+
+            close := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    Logic.remove-library(library);
+                }
             }
         }
     }

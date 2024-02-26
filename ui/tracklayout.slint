@@ -5,6 +5,7 @@ export component TrackLayout inherits Rectangle {
     in property <Track> track;
     property <length> left-right-padding: 8px;
     background: touch.has-hover ? Theme.color.system-blue : Theme.color.system-fill-tertiary;
+    border-radius: 8px;
 
     HorizontalLayout {
         padding-left: left-right-padding;
@@ -29,6 +30,7 @@ export component TrackLayout inherits Rectangle {
                     height: parent.height - 12px;
                     width: 2px;
                     background: Logic.now-playing-track == track.uri ? Theme.color.system-blue : Theme.color.separator;
+                    border-radius: 2px;
                 }
             }
 
