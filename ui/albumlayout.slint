@@ -35,19 +35,39 @@ export component AlbumLayout inherits VerticalLayout {
             VerticalLayout {
                 alignment: start;
                 padding: 24px;
-                VerticalLayout {
+
+                HorizontalLayout {
+                    alignment: stretch;
                     padding-bottom: 16px;
+                    spacing: 8px;
+
                     Rectangle {
-                        Headline {
-                            width: parent.width;
-                            text: album.artist;
+                        width: self.height;
+                        border-radius: self.height;
+                        background: play-pause.has-hover ? Theme.color.system_fill_tertiary : transparent;
+                        animate background {
+                            duration: 250ms;
+                            easing: ease-in-out;
+                        }
+
+                        play-pause := TouchArea {
+                            mouse-cursor: pointer;
                         }
                     }
 
-                    Rectangle {
-                        LargeTitle {
-                            width: parent.width;
-                            text: album.title;
+                    VerticalLayout {
+                        Rectangle {
+                            Headline {
+                                width: parent.width;
+                                text: album.artist;
+                            }
+                        }
+
+                        Rectangle {
+                            LargeTitle {
+                                width: parent.width;
+                                text: album.title;
+                            }
                         }
                     }
                 }
