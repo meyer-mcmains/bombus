@@ -65,7 +65,7 @@ export component AppWindow inherits Window {
                 mouse-cursor: pointer;
                 clicked => {
                     scroll-view.viewport-y = - pos-y;
-                    Logic.album-clicked(index, album);
+                    Logic.album-clicked(index);
                 }
 
                 cover := Cover {

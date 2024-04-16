@@ -79,23 +79,23 @@ fn main() -> Result<(), slint::PlatformError> {
     // on album clicked
     let mut selected_index = i32::MAX;
     let window_handle_weak = window.as_weak();
-    window
-        .global::<Logic>()
-        .on_album_clicked(move |index, album: Album| {
-            let next_selected_index = if index == selected_index {
-                i32::MAX
-            } else {
-                index
-            };
+    window.global::<Logic>().on_album_clicked(move |index| {
+        let next_selected_index = if index == selected_index {
+            i32::MAX
+        } else {
+            index
+        };
 
-            selected_index = next_selected_index;
+        selected_index = next_selected_index;
 
-            window_handle_weak
-                .upgrade_in_event_loop(move |window| window.set_selected_index(selected_index))
-                .unwrap();
+        window_handle_weak
+            .upgrade_in_event_loop(move |window| window.set_selected_index(selected_index))
+            .unwrap();
+    });
 
-            play_album(&album.artist, &album.title);
-        });
+    window.global::<Logic>().on_play_album(move |album| {
+        play_album(&album.artist, &album.title);
+    });
 
     // on track clicked
     window

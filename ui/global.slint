@@ -61,11 +61,12 @@ export global Grid {
 
 export global Logic {
     in-out property <string> now-playing-track;
-    pure callback album-clicked(int, Album);
+    pure callback album-clicked(int);
     pure callback track-clicked(Track);
     pure callback add-library(string, string, color);
     pure callback load-library(Library);
     pure callback remove-library(Library);
+    pure callback play-album(Album);
 }
 
 export global Const {
