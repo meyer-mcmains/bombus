@@ -64,7 +64,10 @@ export component AppWindow inherits Window {
             touch := TouchArea {
                 mouse-cursor: pointer;
                 clicked => {
-                    scroll-view.viewport-y = - pos-y;
+                    // only scroll when opening an album
+                    if index != selected-index {
+                        scroll-view.viewport-y = - pos-y;
+                    }
                     Logic.album-clicked(index);
                 }
 
