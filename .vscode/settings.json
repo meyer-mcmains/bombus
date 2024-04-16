@@ -2,11 +2,4 @@
     "cSpell.words": [
         "slint"
     ],
-
-  "custom-format.formatters": [
-    {
-      "language": "slint",
-      "command": "/Users/mmcmains/projects/slint/target/release/slint-fmt /dev/stdin"
-    }
-  ]
 }
