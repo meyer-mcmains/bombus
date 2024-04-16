@@ -18,7 +18,7 @@ use crate::utils;
 /// - more performance?
 pub fn load_library(window: AppWindow) {
     // load the library
-    let library = get_library().unwrap();
+    let mut library = get_library().unwrap();
 
     // make a clone so we can operate on the library in 2 separate threads
     // TODO improve this
@@ -28,12 +28,28 @@ pub fn load_library(window: AppWindow) {
     thread::spawn(move || {
         window_handle_weak
             .upgrade_in_event_loop(move |handle| {
+                // sort artists by name ignoring `the `
+                library.sort_by(|lhs, rhs| {
+                    let lhs_artist_no_the = lhs.artist.to_lowercase().replace("the ", "");
+                    let rhs_artist_no_the = rhs.artist.to_lowercase().replace("the ", "");
+                    lhs_artist_no_the.cmp(&rhs_artist_no_the)
+                });
+
                 let albums_model: Rc<VecModel<Album>> = Rc::new(VecModel::from(vec![]));
 
                 // transform the library into structs that can be consumed by the ui
                 // TODO serialize into the UI structs directly
                 // NOTE image does not currently implement serialize
-                library.into_iter().for_each(|artist| {
+                library.into_iter().for_each(|mut artist| {
+                    // sort albums by year -> name
+                    artist.albums.sort_by(|lhs, rhs| {
+                        if lhs.year == rhs.year {
+                            let _ = lhs.title.cmp(&rhs.title);
+                        }
+
+                        lhs.year.cmp(&rhs.year)
+                    });
+
                     artist.albums.into_iter().for_each(|album| {
                         let tracks: Vec<Track> = album
                             .tracks
