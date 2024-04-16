@@ -70,6 +70,7 @@ pub fn load_library(window: AppWindow) {
                             title: album.title.into(),
                             image,
                             tracks: ModelRc::new(VecModel::from(tracks)),
+                            year: album.year.into(),
                         };
 
                         albums_model.push(album);

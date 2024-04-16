@@ -38,84 +38,92 @@ export component AlbumLayout inherits VerticalLayout {
                 padding: 24px;
 
                 HorizontalLayout {
-                    alignment: stretch;
-                    padding-bottom: 16px;
-                    spacing: 8px;
+                    alignment: space-between;
 
-                    rect := Rectangle {
-                        width: is-now-playing ? 2px : self.height;
-                        border-radius: is-now-playing ? 2px : 8px;
-                        background: play-pause.has-hover ? Theme.color.system_fill_tertiary : transparent;
+                    HorizontalLayout {
+                        alignment: stretch;
+                        padding-bottom: 16px;
+                        spacing: 8px;
 
-                        states [
-                            now-playing when is-now-playing: {
-                                rect.background: Theme.color.system-blue;
-                            }
+                        rect := Rectangle {
+                            width: is-now-playing ? 2px : self.height;
+                            border-radius: is-now-playing ? 2px : 8px;
+                            background: play-pause.has-hover ? Theme.color.system_fill_tertiary : transparent;
 
-                            has-hover when play-pause.has-hover: {
-                                in {
-                                    animate rect.background {
-                                        duration: 250ms;
-                                        easing: ease-in-out;
+                            states [
+                                now-playing when is-now-playing: {
+                                    rect.background: Theme.color.system-blue;
+                                }
+                                has-hover when play-pause.has-hover: {
+                                    in {
+                                        animate rect.background {
+                                            duration: 250ms;
+                                            easing: ease-in-out;
+                                        }
+                                    }
+                                    out {
+                                        animate rect.background {
+                                            duration: 250ms;
+                                            easing: ease-in-out;
+                                        }
                                     }
                                 }
+                            ]
 
-                                out {
-                                    animate rect.background {
-                                        duration: 250ms;
-                                        easing: ease-in-out;
+                            animate width {
+                                duration: 250ms;
+                                easing: ease-out;
+                            }
+
+                            VerticalLayout {
+                                alignment: center;
+
+                                HorizontalLayout {
+                                    alignment: center;
+
+                                    Image {
+                                        visible: !is-now-playing;
+                                        height: 24px;
+                                        width: self.height;
+                                        source: @image-url("../src/assets/play.svg");
+                                        colorize: play-pause.has-hover ? Theme.color.system-blue : Theme.color.label-secondary;
+                                        animate colorize {
+                                            easing: ease-in;
+                                            duration: 250ms;
+                                        }
                                     }
                                 }
                             }
-                        ]
 
-                        animate width {
-                            duration: 250ms;
-                            easing: ease-out;
+                            play-pause := TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => {
+                                    Logic.play-album(album);
+                                }
+                            }
                         }
 
                         VerticalLayout {
-                            alignment: center;
-
-                            HorizontalLayout {
-                                alignment: center;
-
-                                Image {
-                                    visible: !is-now-playing;
-                                    height: 24px;
-                                    width: self.height;
-                                    source: @image-url("../src/assets/play.svg");
-                                    colorize: play-pause.has-hover ? Theme.color.system-blue : Theme.color.label-secondary;
-                                    animate colorize {
-                                        easing: ease-in;
-                                        duration: 250ms;
-                                    }
+                            Rectangle {
+                                Headline {
+                                    width: parent.width;
+                                    text: album.artist;
                                 }
                             }
-                        }
 
-                        play-pause := TouchArea {
-                            mouse-cursor: pointer;
-                            clicked => {
-                                Logic.play-album(album);
+                            Rectangle {
+                                LargeTitle {
+                                    width: parent.width;
+                                    text: album.title;
+                                }
                             }
                         }
                     }
 
-                    VerticalLayout {
-                        Rectangle {
-                            Headline {
-                                width: parent.width;
-                                text: album.artist;
-                            }
-                        }
-
-                        Rectangle {
-                            LargeTitle {
-                                width: parent.width;
-                                text: album.title;
-                            }
-                        }
+                    LargeTitle {
+                        text: album.year;
+                        color: Theme.color.window-background.darker(1.0);
+                        font-weight: 700;
                     }
                 }
 
@@ -128,7 +136,7 @@ export component AlbumLayout inherits VerticalLayout {
                         spacing: track-spacing;
                         height: tracks-first-column-length * (track-height + track-spacing);
 
-                        for track [index] in album.tracks: Rectangle {
+                        for track[index] in album.tracks: Rectangle {
                             height: index < tracks-first-column-length ? track-height : 0;
                             visible: index < tracks-first-column-length;
                             if index < tracks-first-column-length: TrackLayout {
@@ -141,7 +149,7 @@ export component AlbumLayout inherits VerticalLayout {
                         height: (album.tracks.length * (track-height + track-spacing)) - (tracks-first-column-length * (track-height + track-spacing));
                         spacing: track-spacing;
 
-                        for track [index] in album.tracks: Rectangle {
+                        for track[index] in album.tracks: Rectangle {
                             height: index >= tracks-first-column-length ? track-height : 0;
                             visible: index >= tracks-first-column-length;
                             if index >= tracks-first-column-length: TrackLayout {
