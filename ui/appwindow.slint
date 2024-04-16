@@ -81,10 +81,11 @@ export component AppWindow inherits Window {
                 padding-left: 8px;
                 padding-right: 8px;
                 alignment: start;
+                property <bool> is-now-playing: Logic.now-playing-album == albums[index].id;
 
                 Title3 {
                     overflow: elide;
-                    color: Theme.color.label-secondary;
+                    color: is-now-playing ? Theme.color.system-blue : Theme.color.label-secondary;
                     text: albums[index].title;
                     horizontal-alignment: center;
                 }
@@ -93,6 +94,7 @@ export component AppWindow inherits Window {
                     overflow: elide;
                     text: albums[index].artist;
                     horizontal-alignment: center;
+                    color: is-now-playing ? Theme.color.system-blue.transparentize(0.35) : Theme.color.label-tertiary;
                 }
             }
         }

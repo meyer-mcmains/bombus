@@ -1,4 +1,4 @@
-import { Grid, Album, Theme } from "global.slint";
+import { Grid, Album, Theme, Logic } from "global.slint";
 import { LargeTitle, Headline} from "typography.slint";
 import { TrackLayout } from "tracklayout.slint";
 
@@ -8,6 +8,7 @@ export component AlbumLayout inherits VerticalLayout {
     in property <length> offset-x;
     in property <Album> album;
     property <int> tracks-first-column-length: Math.ceil(album.tracks.length / 2);
+    property <bool> is-now-playing: Logic.now-playing-album == album.id;
     alignment: start;
 
     HorizontalLayout {
@@ -41,13 +42,36 @@ export component AlbumLayout inherits VerticalLayout {
                     padding-bottom: 16px;
                     spacing: 8px;
 
-                    Rectangle {
-                        width: self.height;
-                        border-radius: self.height;
+                    rect := Rectangle {
+                        width: is-now-playing ? 2px : self.height;
+                        border-radius: is-now-playing ? 2px : 8px;
                         background: play-pause.has-hover ? Theme.color.system_fill_tertiary : transparent;
-                        animate background {
+
+                        states [
+                            now-playing when is-now-playing: {
+                                rect.background: Theme.color.system-blue;
+                            }
+
+                            has-hover when play-pause.has-hover: {
+                                in {
+                                    animate rect.background {
+                                        duration: 250ms;
+                                        easing: ease-in-out;
+                                    }
+                                }
+
+                                out {
+                                    animate rect.background {
+                                        duration: 250ms;
+                                        easing: ease-in-out;
+                                    }
+                                }
+                            }
+                        ]
+
+                        animate width {
                             duration: 250ms;
-                            easing: ease-in-out;
+                            easing: ease-out;
                         }
 
                         VerticalLayout {
@@ -57,13 +81,13 @@ export component AlbumLayout inherits VerticalLayout {
                                 alignment: center;
 
                                 Image {
+                                    visible: !is-now-playing;
                                     height: 24px;
                                     width: self.height;
                                     source: @image-url("../src/assets/play.svg");
                                     colorize: play-pause.has-hover ? Theme.color.system-blue : Theme.color.label-secondary;
                                     animate colorize {
                                         easing: ease-in;
-                                        delay: 250ms;
                                         duration: 250ms;
                                     }
                                 }
