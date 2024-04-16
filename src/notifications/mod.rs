@@ -1,6 +1,6 @@
 use crate::utils::slint_modules::{AppWindow, Logic};
 use bombus_data::*;
-use slint::{ComponentHandle, SharedString, Weak};
+use slint::{ComponentHandle, Model, SharedString, Weak};
 use souvlaki::{MediaControls, MediaMetadata};
 use std::{
     sync::{
@@ -14,7 +14,7 @@ use std::{
 fn handle_play_state_change<F>(
     controls: &mut MediaControls,
     notification: &Notification,
-    clear_now_playing_track: F,
+    clear_now_playing: F,
 ) where
     F: FnOnce(),
 {
@@ -38,7 +38,7 @@ fn handle_play_state_change<F>(
                 .unwrap();
         }
         PlayState::Stopped => {
-            clear_now_playing_track();
+            clear_now_playing();
 
             controls
                 .set_playback(souvlaki::MediaPlayback::Stopped)
@@ -74,9 +74,13 @@ pub fn listen(
         // fire event
         match notification.notification_type {
             NotificationTypes::PlayStateChanged => {
-                let clear_now_playing_track = || {
+                let clear_now_playing = || {
                     window_handle_weak
                         .upgrade_in_event_loop(move |window| {
+                            window
+                                .global::<Logic>()
+                                .set_now_playing_album(SharedString::from(""));
+
                             window
                                 .global::<Logic>()
                                 .set_now_playing_track(SharedString::from(""))
@@ -84,7 +88,7 @@ pub fn listen(
                         .unwrap()
                 };
 
-                handle_play_state_change(controls, &notification, clear_now_playing_track);
+                handle_play_state_change(controls, &notification, clear_now_playing);
             }
             NotificationTypes::PluginStartup
             | NotificationTypes::TrackChanged
@@ -112,6 +116,21 @@ pub fn listen(
                 if !notification.track.uri.is_empty() {
                     window_handle_weak
                         .upgrade_in_event_loop(move |window| {
+                            let binding = window.get_albums();
+                            let now_playing_album = binding
+                                .iter()
+                                .find(|album| {
+                                    album
+                                        .tracks
+                                        .iter()
+                                        .any(|track| track.uri == notification.track.uri)
+                                })
+                                .unwrap();
+
+                            window
+                                .global::<Logic>()
+                                .set_now_playing_album(now_playing_album.id);
+
                             window
                                 .global::<Logic>()
                                 .set_now_playing_track(notification.track.uri.into())
