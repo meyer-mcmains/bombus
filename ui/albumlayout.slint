@@ -1,6 +1,7 @@
 import { Grid, Album, Theme, Logic } from "global.slint";
 import { LargeTitle, Headline} from "typography.slint";
 import { TrackLayout } from "tracklayout.slint";
+import { TrackColumns } from "components.slint";
 
 export component AlbumLayout inherits VerticalLayout {
     in property <int> selected-index;
@@ -127,38 +128,8 @@ export component AlbumLayout inherits VerticalLayout {
                     }
                 }
 
-                HorizontalLayout {
-                    property <length> track-spacing: 3px;
-                    property <length> track-height: 32px;
-                    spacing: 12px;
-
-                    VerticalLayout {
-                        spacing: track-spacing;
-                        height: tracks-first-column-length * (track-height + track-spacing);
-
-                        for track[index] in album.tracks: Rectangle {
-                            height: index < tracks-first-column-length ? track-height : 0;
-                            visible: index < tracks-first-column-length;
-                            if index < tracks-first-column-length: TrackLayout {
-                                track: track;
-                            }
-                        }
-                    }
-
-                    VerticalLayout {
-                        height: (album.tracks.length * (track-height + track-spacing)) - (tracks-first-column-length * (track-height + track-spacing));
-                        spacing: track-spacing;
-
-                        for track[index] in album.tracks: Rectangle {
-                            height: index >= tracks-first-column-length ? track-height : 0;
-                            visible: index >= tracks-first-column-length;
-                            if index >= tracks-first-column-length: TrackLayout {
-                                // take into account the offset off extra items
-                                y: tracks-first-column-length * track-spacing * -1;
-                                track: track;
-                            }
-                        }
-                    }
+                TrackColumns {
+                    album: album;
                 }
             }
         }
