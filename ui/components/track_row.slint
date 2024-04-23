@@ -1,7 +1,7 @@
-import { Track, Theme, Logic } from "global.slint";
-import { Body, BodySmallMono } from "typography.slint";
+import { Track, Theme, Logic } from "../global.slint";
+import { Body, BodySmallMono } from "../typography.slint";
 
-export component TrackLayout inherits Rectangle {
+export component TrackRow inherits Rectangle {
     in property <Track> track;
     property <length> left-right-padding: 8px;
     background: touch.has-hover ? Theme.color.system-blue : Theme.color.system-fill-tertiary;
