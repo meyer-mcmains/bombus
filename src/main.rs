@@ -11,7 +11,7 @@ use bombus_data::{next_track, persist, play_album, play_pause, previous_track};
 use slint::{Color, ComponentHandle, Model, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
-use utils::slint_modules::{Album, AppWindow, Library, Logic, Theme, Track};
+use utils::slint_modules::{AppWindow, Library, Logic, Theme, Track};
 use utils::theme;
 
 mod library;
