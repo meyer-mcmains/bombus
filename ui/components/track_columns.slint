@@ -1,38 +1,19 @@
 import { TrackRow } from "./track_row.slint";
-import { Album, Logic } from "../global.slint";
+import { Logic, Track } from "../global.slint";
+import { ListView } from "std-widgets.slint";
 
 export component TrackColumns inherits HorizontalLayout {
-    in property <Album> album;
-    property <length> track-spacing: 3px;
-    property <length> track-height: 32px;
-    property <int> tracks-first-column-length: Math.ceil(album.tracks.length / 2);
+    in property <[[Track]]> tracks;
     spacing: 12px;
 
-    VerticalLayout {
-        height: tracks-first-column-length * (track-height + track-spacing);
-        spacing: track-spacing;
+    for column[columnIndex] in tracks: VerticalLayout {
+        spacing: 3px;
+        width: 50%;
+        padding-right: columnIndex == 1 ? 12px : 0;
 
-        for track[index] in album.tracks: Rectangle {
-            height: index < tracks-first-column-length ? track-height : 0;
-            visible: index < tracks-first-column-length;
-            if index < tracks-first-column-length: TrackRow {
-                track: track;
-            }
-        }
-    }
-
-    VerticalLayout {
-        height: (album.tracks.length * (track-height + track-spacing)) - (tracks-first-column-length * (track-height + track-spacing));
-        spacing: track-spacing;
-
-        for track[index] in album.tracks: Rectangle {
-            height: index >= tracks-first-column-length ? track-height : 0;
-            visible: index >= tracks-first-column-length;
-            if index >= tracks-first-column-length: TrackRow {
-                // take into account the offset off extra items
-                y: tracks-first-column-length * track-spacing * -1;
-                track: track;
-            }
+        for track[idx] in column: TrackRow {
+            height: 32px;
+            track: track;
         }
     }
 }
