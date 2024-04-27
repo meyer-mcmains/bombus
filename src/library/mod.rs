@@ -59,6 +59,7 @@ pub fn load_library(window: AppWindow) {
                                 title: track.title.into(),
                                 number: track.number,
                                 uri: track.uri.into(),
+                                disk: track.disk.unwrap_or_default(),
                             })
                             .collect();
 
