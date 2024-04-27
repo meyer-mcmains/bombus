@@ -15,7 +15,7 @@ slint = { version = "1.0", default-features = false, features = [
     "backend-winit",
     "renderer-winit-skia",
 ] }
-souvlaki = "0.7.0"
+souvlaki = "0.7.3"
 bombus-data = { path = "bombus-data" }
 image = { version = "0.24.7", default-features = false, features = ["jpeg"] }
 cacao = "0.3.2"
