@@ -72,7 +72,7 @@ pub struct Track {
     pub id: String,
     pub album: String,
     pub artist: String,
-    pub disk: Option<u64>,
+    pub disk: Option<i32>,
     pub length: String,
     pub duration: i64,
     pub title: String,
