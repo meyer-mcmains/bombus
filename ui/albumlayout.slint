@@ -1,4 +1,4 @@
-import { Grid, Album, Theme, Logic } from "global.slint";
+import { Grid, Album, Theme, Logic, Track } from "global.slint";
 import { LargeTitle, Headline} from "typography.slint";
 import { TrackColumns } from "components.slint";
 
@@ -7,7 +7,7 @@ export component AlbumLayout inherits VerticalLayout {
     in property <int> items-per-row;
     in property <length> offset-x;
     in property <Album> album;
-    property <int> tracks-first-column-length: Math.ceil(album.tracks.length / 2);
+    in property <[[Track]]> tracks;
     property <bool> is-now-playing: Logic.now-playing-album == album.id;
     alignment: start;
 
@@ -128,7 +128,7 @@ export component AlbumLayout inherits VerticalLayout {
                 }
 
                 TrackColumns {
-                    album: album;
+                    tracks: tracks;
                 }
             }
         }

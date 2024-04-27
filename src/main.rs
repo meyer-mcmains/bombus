@@ -8,7 +8,7 @@ use std::{
 };
 
 use bombus_data::{next_track, persist, play_album, play_pause, previous_track};
-use slint::{Color, ComponentHandle, Model, VecModel};
+use slint::{Color, ComponentHandle, Model, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
 use utils::slint_modules::{AppWindow, Library, Logic, Theme, Track};
@@ -147,6 +147,23 @@ fn main() -> Result<(), slint::PlatformError> {
             .unwrap();
         ui_libraries.remove(remove_index);
     });
+
+    window
+        .global::<Logic>()
+        .on_apply_track_sorting(move |album| {
+            let first_column_length = album.tracks.row_count().div_ceil(2);
+
+            let (column_1, column_2): (Vec<Track>, Vec<Track>) = album
+                .tracks
+                .iter()
+                .partition(|track| track.number <= first_column_length as i32);
+
+            let tracks = Rc::new(VecModel::default());
+            tracks.push(ModelRc::new(VecModel::from_slice(&column_1)));
+            tracks.push(ModelRc::new(VecModel::from_slice(&column_2)));
+
+            tracks.clone().into()
+        });
 
     window.run()
 }

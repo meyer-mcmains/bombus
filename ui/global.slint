@@ -70,6 +70,7 @@ export global Logic {
     pure callback load-library(Library);
     pure callback remove-library(Library);
     pure callback play-album(Album);
+    pure callback apply_track_sorting(Album) -> [[Track]];
 }
 
 export global Const {
