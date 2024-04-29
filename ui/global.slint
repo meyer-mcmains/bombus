@@ -50,6 +50,10 @@ export struct Color {
     window_background: color,
 }
 
+export global Selected {
+    in-out property <[[Track]]> tracks;
+}
+
 export global Theme {
     in-out property <Color> color;
 }
@@ -70,7 +74,7 @@ export global Logic {
     pure callback load-library(Library);
     pure callback remove-library(Library);
     pure callback play-album(Album);
-    pure callback apply_track_sorting(Album) -> [[Track]];
+    pure callback apply_track_sorting(Album);
 }
 
 export global Const {

@@ -1,18 +1,17 @@
 import { ScrollView } from "std-widgets.slint";
-import { Grid, Logic, Const, Album, Theme, Color, Library, Track } from "global.slint";
+import { Grid, Logic, Const, Album, Theme, Color, Library, Track, Selected } from "global.slint";
 import { Cover } from "cover.slint";
 import { AlbumLayout } from "albumlayout.slint";
 import { Title3, BodySmall} from "typography.slint";
 import { Launch } from "launch.slint";
 
-export { Logic, Theme, Color }
+export { Logic, Theme, Color, Selected }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;
     in property <bool> has-frame: false;
     in property <int> selected-index: Const.i32-max;
     in property <[Library]> libraries;
-    property <[[Track]]> tracks;
     title: "Bombus";
     background: albums.length > 0 ? Theme.color.window-background.darker(1.0) : transparent;
     min-width: 400px;
@@ -44,7 +43,6 @@ export component AppWindow inherits Window {
             items-per-row: items-per-row;
             offset-x: offset-x;
             album: albums[selected-index];
-            tracks: tracks;
         }
 
         // loop over albums creating the grid
@@ -71,7 +69,7 @@ export component AppWindow inherits Window {
                         scroll-view.viewport-y = - pos-y;
                     }
                     Logic.album-clicked(index);
-                    tracks = Logic.apply_track_sorting(albums[index])
+                    Logic.apply_track_sorting(albums[index])
                 }
 
                 cover := Cover {

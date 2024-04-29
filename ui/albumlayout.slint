@@ -7,7 +7,6 @@ export component AlbumLayout inherits VerticalLayout {
     in property <int> items-per-row;
     in property <length> offset-x;
     in property <Album> album;
-    in property <[[Track]]> tracks;
     property <bool> is-now-playing: Logic.now-playing-album == album.id;
     alignment: start;
 
@@ -127,9 +126,7 @@ export component AlbumLayout inherits VerticalLayout {
                     }
                 }
 
-                TrackColumns {
-                    tracks: tracks;
-                }
+                TrackColumns { }
             }
         }
     }

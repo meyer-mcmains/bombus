@@ -1,12 +1,11 @@
 import { TrackRow } from "./track_row.slint";
-import { Logic, Track } from "../global.slint";
+import { Logic, Track, Selected } from "../global.slint";
 import { ListView } from "std-widgets.slint";
 
 export component TrackColumns inherits HorizontalLayout {
-    in property <[[Track]]> tracks;
     spacing: 12px;
 
-    for column[columnIndex] in tracks: VerticalLayout {
+    for column[columnIndex] in Selected.tracks: VerticalLayout {
         spacing: 3px;
         width: 50%;
         padding-right: columnIndex == 1 ? 12px : 0;

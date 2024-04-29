@@ -11,7 +11,7 @@ use bombus_data::{next_track, persist, play_album, play_pause, previous_track};
 use slint::{Color, ComponentHandle, Model, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
-use utils::slint_modules::{AppWindow, Library, Logic, Theme, Track};
+use utils::slint_modules::{AppWindow, Library, Logic, Selected, Theme, Track};
 use utils::theme;
 
 mod library;
@@ -148,6 +148,7 @@ fn main() -> Result<(), slint::PlatformError> {
         ui_libraries.remove(remove_index);
     });
 
+    let window_handle_weak = window.as_weak();
     window
         .global::<Logic>()
         .on_apply_track_sorting(move |album| {
@@ -162,7 +163,11 @@ fn main() -> Result<(), slint::PlatformError> {
             tracks.push(ModelRc::new(VecModel::from_slice(&column_1)));
             tracks.push(ModelRc::new(VecModel::from_slice(&column_2)));
 
-            tracks.clone().into()
+            window_handle_weak
+                .upgrade()
+                .unwrap()
+                .global::<Selected>()
+                .set_tracks(tracks.clone().into());
         });
 
     window.run()
