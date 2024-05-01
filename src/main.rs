@@ -8,10 +8,11 @@ use std::{
 };
 
 use bombus_data::{next_track, persist, play_album, play_pause, previous_track};
-use slint::{Color, ComponentHandle, Model, ModelRc, VecModel};
+use itertools::Itertools;
+use slint::{Color, ComponentHandle, Model, ModelExt, ModelRc, VecModel};
 use souvlaki::{MediaControlEvent, MediaControls, PlatformConfig};
 
-use utils::slint_modules::{AppWindow, Library, Logic, Selected, Theme, Track};
+use utils::slint_modules::{AppWindow, Disk, Library, Logic, Selected, Theme, Track};
 use utils::theme;
 
 mod library;
@@ -152,22 +153,32 @@ fn main() -> Result<(), slint::PlatformError> {
     window
         .global::<Logic>()
         .on_apply_track_sorting(move |album| {
-            let first_column_length = album.tracks.row_count().div_ceil(2);
+            let data_grouped: Rc<VecModel<Disk>> = Rc::new(VecModel::default());
+            for (key, group) in &album.tracks.iter().group_by(|track| track.disk) {
+                let track_count = album
+                    .tracks
+                    .clone()
+                    .filter(move |track| track.disk == key)
+                    .row_count();
 
-            let (column_1, column_2): (Vec<Track>, Vec<Track>) = album
-                .tracks
-                .iter()
-                .partition(|track| track.number <= first_column_length as i32);
+                let (column_1, column_2): (Vec<Track>, Vec<Track>) =
+                    group.partition(|track| track.number <= track_count.div_ceil(2) as i32);
 
-            let tracks = Rc::new(VecModel::default());
-            tracks.push(ModelRc::new(VecModel::from_slice(&column_1)));
-            tracks.push(ModelRc::new(VecModel::from_slice(&column_2)));
+                let tracks = Rc::new(VecModel::default());
+                tracks.push(ModelRc::new(VecModel::from_slice(&column_1)));
+                tracks.push(ModelRc::new(VecModel::from_slice(&column_2)));
+
+                data_grouped.push(Disk {
+                    number: key,
+                    tracks: tracks.into(),
+                });
+            }
 
             window_handle_weak
                 .upgrade()
                 .unwrap()
                 .global::<Selected>()
-                .set_tracks(tracks.clone().into());
+                .set_disks(data_grouped.into());
         });
 
     window.run()

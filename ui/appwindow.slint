@@ -1,11 +1,11 @@
 import { ScrollView } from "std-widgets.slint";
-import { Grid, Logic, Const, Album, Theme, Color, Library, Track, Selected } from "global.slint";
+import { Grid, Logic, Const, Album, Theme, Color, Library, Track, Selected, Disk } from "global.slint";
 import { Cover } from "cover.slint";
 import { AlbumLayout } from "albumlayout.slint";
 import { Title3, BodySmall} from "typography.slint";
 import { Launch } from "launch.slint";
 
-export { Logic, Theme, Color, Selected }
+export { Logic, Theme, Color, Selected, Disk }
 
 export component AppWindow inherits Window {
     in property <[Album]> albums;

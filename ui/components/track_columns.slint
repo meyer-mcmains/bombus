@@ -1,18 +1,33 @@
 import { TrackRow } from "./track_row.slint";
-import { Logic, Track, Selected } from "../global.slint";
+import { Logic, Track, Selected, Theme } from "../global.slint";
 import { ListView } from "std-widgets.slint";
+import { Body, Title3 } from "../typography.slint";
 
-export component TrackColumns inherits HorizontalLayout {
-    spacing: 12px;
+export component TrackColumns inherits VerticalLayout {
+    spacing: 24px;
 
-    for column[columnIndex] in Selected.tracks: VerticalLayout {
-        spacing: 3px;
-        width: 50%;
-        padding-right: columnIndex == 1 ? 12px : 0;
+    for disk in Selected.disks: VerticalLayout {
+        spacing: 8px;
 
-        for track[idx] in column: TrackRow {
-            height: 32px;
-            track: track;
+        if disk.number > 0: Title3 {
+            text: "Disk \{disk.number}";
+            color: Theme.color.label-secondary;
+            font-size: 17px;
+        }
+
+        HorizontalLayout {
+            spacing: 12px;
+
+            for column[columnIndex] in disk.tracks: VerticalLayout {
+                spacing: 3px;
+                width: 50%;
+                padding-right: columnIndex == 1 ? 12px : 0;
+
+                for track[idx] in column: TrackRow {
+                    height: 32px;
+                    track: track;
+                }
+            }
         }
     }
 }

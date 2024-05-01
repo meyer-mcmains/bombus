@@ -248,6 +248,7 @@ dependencies = [
  "bombus-data",
  "cacao",
  "image",
+ "itertools",
  "regex",
  "slint",
  "slint-build",

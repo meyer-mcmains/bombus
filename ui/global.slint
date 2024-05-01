@@ -50,8 +50,14 @@ export struct Color {
     window_background: color,
 }
 
+export struct Disk {
+    // name: string
+    number: int,
+    tracks: [[Track]]
+}
+
 export global Selected {
-    in-out property <[[Track]]> tracks;
+    in-out property <[Disk]> disks;
 }
 
 export global Theme {

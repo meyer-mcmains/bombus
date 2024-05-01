@@ -20,6 +20,7 @@ bombus-data = { path = "bombus-data" }
 image = { version = "0.24.7", default-features = false, features = ["jpeg"] }
 cacao = "0.3.2"
 regex = "1.10.2"
+itertools = "0.12.1"
 
 [build-dependencies]
 slint-build = "1.0"
