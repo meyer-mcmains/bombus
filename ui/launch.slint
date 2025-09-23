@@ -18,16 +18,16 @@ export component Launch inherits Rectangle {
             color: Theme.color.system-white;
         }
 
-        if libraries.length == 0 : Title3 {
+        if libraries.length == 0: Title3 {
             horizontal-alignment: center;
             vertical-alignment: center;
             text: "Get started by adding a library!";
             color: Theme.color.label-secondary;
         }
 
-        if libraries.length > 0 : ListView {
+        if libraries.length > 0: ListView {
             height: 200px;
-            for library in libraries : LibraryItem {
+            for library in libraries: LibraryItem {
                 library: library;
             }
         }
@@ -66,9 +66,7 @@ export component Launch inherits Rectangle {
                 background: black;
                 opacity: 0;
 
-                animate opacity {
-                    duration: 250ms;
-                }
+                animate opacity { duration: 250ms; }
             }
 
             sheet := Rectangle {
@@ -79,9 +77,7 @@ export component Launch inherits Rectangle {
                 background: Theme.color.window-background;
                 opacity: 0;
 
-                animate opacity {
-                    duration: 250ms;
-                }
+                animate opacity { duration: 250ms; }
             }
 
             VerticalLayout {
@@ -101,9 +97,7 @@ export component Launch inherits Rectangle {
                             border-radius: self.height;
                             background: current-color;
 
-                            animate background {
-                                duration: 250ms;
-                            }
+                            animate background { duration: 250ms; }
                         }
 
                         LargeTitle {
@@ -130,10 +124,18 @@ export component Launch inherits Rectangle {
                     }
 
                     HorizontalLayout {
-                        property <[color]> colors: [Theme.color.system-red, Theme.color.system-orange, Theme.color.system-yellow, Theme.color.system-green, Theme.color.system-blue, Theme.color.system-purple, Theme.color.system-gray];
+                        property <[color]> colors: [
+                            Theme.color.system-red,
+                            Theme.color.system-orange,
+                            Theme.color.system-yellow,
+                            Theme.color.system-green,
+                            Theme.color.system-blue,
+                            Theme.color.system-purple,
+                            Theme.color.system-gray
+                        ];
                         property <length> size: 16px;
                         property <length> hover-size: 20px;
-                        for color [index] in colors: Rectangle {
+                        for color[index] in colors: Rectangle {
                             height: 20px;
                             width: 24px;
 
