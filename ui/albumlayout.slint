@@ -95,6 +95,7 @@ export component AlbumLayout inherits VerticalLayout {
                             }
 
                             play-pause := TouchArea {
+                                enabled: !is-now-playing;
                                 mouse-cursor: pointer;
                                 clicked => Logic.play-album(album);
                             }
