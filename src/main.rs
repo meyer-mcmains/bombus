@@ -73,7 +73,7 @@ fn main() -> Result<(), slint::PlatformError> {
     // listen for notifications from musicbee
     let window_handle_weak = window.as_weak();
     let library_selected_clone = library_selected.clone();
-    let notifications_tread = thread::spawn(move || {
+    let notifications_thread = thread::spawn(move || {
         notifications::listen(library_selected_clone, window_handle_weak, &mut controls)
     });
 
@@ -129,7 +129,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
         // unpark the socket thread
         library_selected_clone.store(true, Ordering::Release);
-        notifications_tread.thread().unpark();
+        notifications_thread.thread().unpark();
 
         // show the frame after selecting a library
         let upgraded_window = window_handle_weak.upgrade().unwrap();
