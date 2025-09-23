@@ -1,4 +1,6 @@
-use crate::utils::slint_modules::{AppWindow, Logic};
+use crate::utils::slint_modules::{
+    AppWindow, Logic, NowPlayingState, PlayState as SlintPlayState, Track,
+};
 use bombus_data::*;
 use slint::{ComponentHandle, Model, SharedString, Weak};
 use souvlaki::{MediaControls, MediaMetadata};
@@ -83,7 +85,7 @@ pub fn listen(
 
                             window
                                 .global::<Logic>()
-                                .set_now_playing_track(SharedString::from(""))
+                                .set_now_playing_track(Track::default())
                         })
                         .unwrap()
                 };
@@ -111,6 +113,24 @@ pub fn listen(
                     })
                     .unwrap();
 
+                // on darwin if the first play state from MusicBee is Paused,
+                // than than the now playing controls will not update
+                // it's possible that darwin requires a Playing state before a Paused one
+                // in either cause just dispatch a Playing playback state
+                // before calling handle_play_state_change normally
+                match notification.play_state {
+                    PlayState::Paused => {
+                        controls
+                            .set_playback(souvlaki::MediaPlayback::Playing {
+                                progress: Some(souvlaki::MediaPosition(Duration::from_millis(
+                                    notification.position as u64,
+                                ))),
+                            })
+                            .unwrap();
+                    }
+                    _ => (),
+                }
+
                 handle_play_state_change(controls, &notification, || { /* do nothing */ });
 
                 if !notification.track.uri.is_empty() {
@@ -133,7 +153,23 @@ pub fn listen(
 
                             window
                                 .global::<Logic>()
-                                .set_now_playing_track(notification.track.uri.into())
+                                .set_now_playing_state(NowPlayingState {
+                                    position: notification.position.into(),
+                                    playState: match notification.play_state {
+                                        PlayState::Paused => SlintPlayState::Paused,
+                                        PlayState::Playing => SlintPlayState::Playing,
+                                        PlayState::Stopped => SlintPlayState::Stopped,
+                                    },
+                                });
+
+                            window.global::<Logic>().set_now_playing_track(Track {
+                                duration: notification.track.duration.into(),
+                                length: notification.track.length.into(),
+                                title: notification.track.title.into(),
+                                number: notification.track.number,
+                                uri: notification.track.uri.into(),
+                                disk: notification.track.disk.unwrap_or_default(),
+                            })
                         })
                         .unwrap();
                 }

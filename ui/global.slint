@@ -1,9 +1,21 @@
 export struct Track {
     length: string,
+    duration: duration,
     title: string,
     number: int,
     uri: string,
-    disk: int
+    disk: int,
+}
+
+export enum PlayState {
+    Playing,
+    Paused,
+    Stopped,
+}
+
+export struct NowPlayingState {
+    position: duration,
+    playState: PlayState,
 }
 
 export struct Album {
@@ -72,8 +84,9 @@ export global Grid {
 }
 
 export global Logic {
-    in-out property <string> now-playing-track;
+    in-out property <Track> now-playing-track;
     in-out property <string> now-playing-album;
+    in-out property <NowPlayingState> now-playing-state;
     pure callback album-clicked(int);
     pure callback track-clicked(Track);
     pure callback add-library(string, string, color);

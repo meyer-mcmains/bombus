@@ -55,6 +55,7 @@ pub fn load_library(window: AppWindow) {
                             .tracks
                             .into_iter()
                             .map(|track| Track {
+                                duration: track.duration.into(),
                                 length: track.length.into(),
                                 title: track.title.into(),
                                 number: track.number,
