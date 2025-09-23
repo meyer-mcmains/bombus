@@ -1,6 +1,6 @@
 import { Grid, Album, Theme, Logic, Track } from "global.slint";
 import { LargeTitle, Headline} from "typography.slint";
-import { TrackColumns } from "components.slint";
+import { TrackColumns, Center } from "components.slint";
 
 export component AlbumLayout inherits VerticalLayout {
     in property <int> selected-index;
@@ -74,22 +74,16 @@ export component AlbumLayout inherits VerticalLayout {
                                 easing: ease-out;
                             }
 
-                            VerticalLayout {
-                                alignment: center;
-
-                                HorizontalLayout {
-                                    alignment: center;
-
-                                    Image {
-                                        visible: !is-now-playing;
-                                        height: 24px;
-                                        width: self.height;
-                                        source: @image-url("../src/assets/play.svg");
-                                        colorize: play-pause.has-hover ? Theme.color.system-blue : Theme.color.label-secondary;
-                                        animate colorize {
-                                            easing: ease-in;
-                                            duration: 250ms;
-                                        }
+                            Center {
+                                Image {
+                                    visible: !is-now-playing;
+                                    height: 24px;
+                                    width: self.height;
+                                    source: @image-url("../src/assets/play.svg");
+                                    colorize: play-pause.has-hover ? Theme.color.system-blue : Theme.color.label-secondary;
+                                    animate colorize {
+                                        easing: ease-in;
+                                        duration: 250ms;
                                     }
                                 }
                             }
