@@ -154,7 +154,7 @@ fn main() -> Result<(), slint::PlatformError> {
         .global::<Logic>()
         .on_apply_track_sorting(move |album| {
             let data_grouped: Rc<VecModel<Disk>> = Rc::new(VecModel::default());
-            for (key, group) in &album.tracks.iter().group_by(|track| track.disk) {
+            for (key, group) in &album.tracks.iter().chunk_by(|track| track.disk) {
                 let track_count = album
                     .tracks
                     .clone()

@@ -9,18 +9,13 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-slint = { version = "1.0", default-features = false, features = [
-    "compat-1-2",
-    "std",
-    "backend-winit",
-    "renderer-winit-skia",
-] }
-souvlaki = "0.7.3"
+slint = "1.13.1"
+souvlaki = "0.8.3"
 bombus-data = { path = "bombus-data" }
-image = { version = "0.24.7", default-features = false, features = ["jpeg"] }
+image = { version = "0.25.8", default-features = false, features = ["jpeg"] }
 cacao = "0.3.2"
-regex = "1.10.2"
-itertools = "0.12.1"
+regex = "1.11.2"
+itertools = "0.14.0"
 
 [build-dependencies]
 slint-build = "1.0"
