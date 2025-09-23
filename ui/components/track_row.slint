@@ -69,8 +69,6 @@ export component TrackRow inherits Rectangle {
 
     touch := TouchArea {
         mouse-cursor: pointer;
-        clicked => {
-            Logic.track-clicked(track);
-        }
+        clicked => Logic.track-clicked(track);
     }
 }

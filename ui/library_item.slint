@@ -45,9 +45,7 @@ export component LibraryItem inherits Rectangle {
 
             touch := TouchArea {
                 mouse-cursor: pointer;
-                clicked => {
-                    Logic.load-library(library);
-                }
+                clicked => Logic.load-library(library);
             }
         }
 
@@ -81,9 +79,7 @@ export component LibraryItem inherits Rectangle {
 
             close := TouchArea {
                 mouse-cursor: pointer;
-                clicked => {
-                    Logic.remove-library(library);
-                }
+                clicked => Logic.remove-library(library);
             }
         }
     }
