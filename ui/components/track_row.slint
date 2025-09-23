@@ -1,11 +1,16 @@
 import { Track, Theme, Logic } from "../global.slint";
 import { Body, BodySmallMono } from "../typography.slint";
+import { VerticalBox } from "std-widgets.slint";
 
 export component TrackRow inherits Rectangle {
     in property <Track> track;
     property <length> left-right-padding: 8px;
     background: touch.has-hover ? Theme.color.system-blue : Theme.color.system-fill-tertiary;
     border-radius: 8px;
+    animate background {
+        duration: 250ms;
+        easing: ease-in-out;
+    }
 
     HorizontalLayout {
         padding-left: left-right-padding;
@@ -18,18 +23,22 @@ export component TrackRow inherits Rectangle {
                 padding-right: 10px;
 
                 BodySmallMono {
-                    opacity: 0.75;
+                    color: touch.has-hover ? Theme.color.system-white : Theme.color.label-secondary;
                     vertical-alignment: center;
                     horizontal-alignment: center;
                     text: track.number;
                     width: 18px;
+                    animate color {
+                        duration: 250ms;
+                        easing: ease-in-out;
+                    }
                 }
 
                 Rectangle {
                     y: 6px;
                     height: parent.height - 12px;
                     width: 2px;
-                    background: Logic.now-playing-track == track.uri ? Theme.color.system-blue : Theme.color.separator;
+                    background: Logic.now-playing-track.uri == track.uri ? Theme.color.system-blue : Theme.color.separator;
                     border-radius: 2px;
                 }
             }
@@ -46,10 +55,14 @@ export component TrackRow inherits Rectangle {
             padding-left: 8px;
 
             BodySmallMono {
-                opacity: 0.75;
+                color: touch.has-hover ? Theme.color.system-white : Theme.color.label-secondary;
                 vertical-alignment: center;
                 horizontal-alignment: left;
                 text: track.length;
+                animate color {
+                    duration: 250ms;
+                    easing: ease-in-out;
+                }
             }
         }
     }
