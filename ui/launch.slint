@@ -49,7 +49,7 @@ export component Launch inherits Rectangle {
             property <length> sheet-inset: inset * 2;
             property <length> panel-inset: sheet-inset - 16px;
             property <color> current-color;
-            close-on-click: false;
+            close-policy: close-on-click;
             height: root.height;
             width: root.height;
 
