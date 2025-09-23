@@ -116,7 +116,7 @@ pub fn listen(
                 // on darwin if the first play state from MusicBee is Paused,
                 // than than the now playing controls will not update
                 // it's possible that darwin requires a Playing state before a Paused one
-                // in either cause just dispatch a Playing playback state
+                // in either case, just dispatch a Playing playback state
                 // before calling handle_play_state_change normally
                 match notification.play_state {
                     PlayState::Paused => {
